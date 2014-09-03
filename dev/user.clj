@@ -1,46 +1,25 @@
 (ns user
-  "Tools for interactive development with the REPL. This file should
+    "Tools for interactive development with the REPL. This file should
   not be included in a production build of the application."
-  (:require
-   [clojure.java.io :as io]
-   [clojure.java.javadoc :refer (javadoc)]
-   [clojure.pprint :refer (pprint)]
-   [clojure.reflect :refer (reflect)]
-   [clojure.repl :refer (apropos dir doc find-doc pst source)]
-   [clojure.set :as set]
-   [clojure.string :as str]
-   [clojure.test :as test]
-   [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-   [datomic.api :as d :refer [db q]]
-   ))
+  (:require [com.stuartsierra.component :as component]
+            [clojure.tools.namespace.repl :refer (refresh)]
+            [stack-spike.core :refer :all]
+            [clojure.test]))
 
 (def system nil)
-(def conn nil)
 
-(defn init
-  "Constructs the current development system."
-  []
+(defn init []
   (alter-var-root #'system
-    (constantly :foo)))
+    (constantly (stack-spike-system default-config))))
 
-(defn start
-  "Starts the current development system."
-  []
-  )
+(defn start []
+  (alter-var-root #'system component/start))
 
-(defn rebuild-database
-  "Replace the database for the current development system."
-  []
-  )
+(defn stop []
+  (alter-var-root #'system
+    (fn [s] (when s (component/stop s)))))
 
-(defn stop
-  "Shuts down and destroys the current development system."
-  []
-  )
-
-(defn go
-  "Initializes the current development system and starts it running."
-  []
+(defn go []
   (init)
   (start))
 
