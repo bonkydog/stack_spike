@@ -1,7 +1,10 @@
 (ns stack-spike.core
   (:require [com.stuartsierra.component :as component]
             [ring.adapter.jetty :as web]
-            [datomic.api :refer [db q] :as d])
+            [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
+            [datomic.api :refer [db q] :as d]
+            [bidi.bidi :refer (make-handler)]
+            [liberator.core :refer [defresource]])
   (:gen-class :main true))
 
 (def schema
@@ -17,15 +20,18 @@
   (fn [request]
     (handler (assoc request :conn (:conn database)))))
 
-(defn stack-spike-app [request]
-  {:status 200
-   :headers {}
-   :body (str "Hello, stack!" (:conn request))})
+(defresource home
+  :available-media-types ["text/plain"]
+  :handle-ok (fn [ctx] (str "Hello, reloaded world! Here is my database connection: " (get-in ctx [:request :conn]))))
+
+(def routes
+  (make-handler ["/" home]))
 
 (defrecord Application [handler database]
   component/Lifecycle
   (start [component]
-    (assoc component :handler (wrap-db handler database)))
+    (assoc component :handler (-> handler
+                                  (wrap-db database))))
   (stop [component]
     (assoc component :handler nil)))
 
@@ -57,7 +63,7 @@
     (assoc component :web-server (web/run-jetty (:handler app) {:port port :join? join?})))
   (stop [component]
     (println "Stopping web server.")
-    (.stop (:web-server component))
+    (when-let [server (:web-server component)] (.stop server))
     (assoc component :web-server nil)))
 
 (defn new-web-server [config]
@@ -77,7 +83,7 @@
                      :db {:uri "datomic:dev://localhost:4334/stack-spike"
                           :reset? false
                           :schema schema}
-                     :app {:handler stack-spike-app}})
+                     :app {:handler routes}})
 
 (defn -main
   "Run the application."
