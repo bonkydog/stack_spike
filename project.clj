@@ -9,6 +9,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2311"]
                  [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
+                 [environ "1.0.0"]
                  [om "0.7.1"]
                  [om-sync "0.1.1"]
                  [ring/ring "1.3.1"]
@@ -17,14 +18,15 @@
                  [bidi "1.10.4"]
                  [liberator "0.12.1"]
                  [com.datomic/datomic-pro "0.9.4815"]
-                 [com.stuartsierra/component "0.2.1"]
+                 [com.stuartsierra/component "0.2.2"]
                  [ring-mock "0.1.5"]
                  [clj-webdriver "0.6.0"]]
 
   :main stack-spike.core
-  :target-path "target/%s"
+  :Target-path "target/%s"
 
-  :plugins [[lein-cljsbuild "1.0.3"]]
+  :plugins [[lein-cljsbuild "1.0.3"]
+            [lein-environ "1.0.0"]]
 
   :source-paths ["src/clj" "src/cljs"]
   :resource-paths ["resources"]

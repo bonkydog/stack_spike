@@ -4,13 +4,14 @@
   (:require [com.stuartsierra.component :as component]
             [clojure.tools.namespace.repl :refer (refresh)]
             [stack-spike.core :refer :all]
-            [clojure.test]))
+            [clojure.test]
+            [clojure.stacktrace :refer [print-stack-trace print-cause-trace]]))
 
 (def system nil)
 
 (defn init []
   (alter-var-root #'system
-    (constantly (stack-spike-system default-config))))
+    (constantly (application))))
 
 (defn start []
   (alter-var-root #'system component/start))

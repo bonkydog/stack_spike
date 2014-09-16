@@ -1,10 +1,13 @@
 (ns stack-spike.core
   (:require [com.stuartsierra.component :as component]
-            [ring.adapter.jetty :as web]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
-            [datomic.api :refer [db q] :as d]
             [bidi.bidi :refer (make-handler)]
-            [liberator.core :refer [defresource]])
+            [liberator.core :refer [defresource]]
+            [environ.core :refer [env]]
+            (stack-spike.components
+             [jetty :refer [new-web-server]]
+             [datomic :refer [new-datomic-db]]
+             (handler :refer [new-handler])))
   (:gen-class :main true))
 
 (def schema
@@ -15,78 +18,13 @@
    :db/doc "An exercise's name"
    :db.install/_attribute :db.part/db}])
 
-
-(defn wrap-db [handler database]
-  (fn [request]
-    (handler (assoc request :conn (:conn database)))))
-
-(defresource home
-  :available-media-types ["text/plain"]
-  :handle-ok (fn [ctx] (str "Hello, reloaded world! Here is my database connection: " (get-in ctx [:request :conn]))))
-
-(def routes
-  (make-handler ["/" home]))
-
-(defrecord Application [handler database]
-  component/Lifecycle
-  (start [component]
-    (assoc component :handler (-> handler
-                                  (wrap-db database))))
-  (stop [component]
-    (assoc component :handler nil)))
-
-(defn new-app [config]
-  (map->Application config))
-
-(defrecord Database [uri schema reset?]
-  component/Lifecycle
-  (start [component]
-    (if reset? (d/delete-database uri))
-    (d/create-database uri)
-    (let [conn (d/connect uri)]
-      (d/transact conn schema)
-      (println "Connecting to database.")
-      (assoc component :conn conn)))
-  (stop [component]
-    ;; Note that it is unnecessary to release the connection.
-    ;; Please see http://docs.datomic.com/clojure/index.html#datomic.api/release
-    (println "Dropping database connection.")
-    (assoc component :conn nil)))
-
-(defn new-database [config]
-  (map->Database config))
-
-(defrecord WebServer [app port join?]
-  component/Lifecycle
-  (start [component]
-    (println "Starting web server.")
-    (assoc component :web-server (web/run-jetty (:handler app) {:port port :join? join?})))
-  (stop [component]
-    (println "Stopping web server.")
-    (when-let [server (:web-server component)] (.stop server))
-    (assoc component :web-server nil)))
-
-(defn new-web-server [config]
-  (map->WebServer config))
-
-(defn stack-spike-system [config]
+(defn application []
   (component/system-map
-   :database (new-database (:db config))
-   :app (component/using (new-app (:app config))
-                         [:database])
-   :web-server (component/using
-                (new-web-server (:web config))
-                [:app])))
-
-(def default-config {:web {:port 8080
-                           :join true}
-                     :db {:uri "datomic:dev://localhost:4334/stack-spike"
-                          :reset? false
-                          :schema schema}
-                     :app {:handler routes}})
+   :datomic-db (new-datomic-db (env :datomic-uri))
+   :handler (component/using (new-handler) [:datomic-db])
+   :web (component/using (new-web-server (env :http-port)) [:handler])))
 
 (defn -main
   "Run the application."
   [& args]
-  (let [[port] args]
-    (component/start (stack-spike-system default-config))))
+  (component/start (application)))
