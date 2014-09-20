@@ -31,10 +31,11 @@
   :source-paths ["src/clj" "src/cljs"]
   :resource-paths ["resources"]
   :profiles {:uberjar {:aot :all}
-             :dev {:plugins [[com.cemerick/austin "0.1.5"]]
-                   :source-paths ["dev"]
-                   :dependencies [[org.clojure/tools.namespace "0.2.4"]
-                                  [org.clojure/java.classpath "0.2.1"]]}}
+             :dev [:dev-env {:plugins [[com.cemerick/austin "0.1.5"]]
+                             :source-paths ["dev"]
+                             :dependencies [[org.clojure/tools.namespace "0.2.4"]
+                                            [org.clojure/java.classpath "0.2.1"]]}]
+             :test [:test-env]}
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/clj" "src/cljs"]
                         :compiler {:output-to "resources/public/js/main.js"
