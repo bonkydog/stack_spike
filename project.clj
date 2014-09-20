@@ -40,4 +40,5 @@
                         :compiler {:output-to "resources/public/js/main.js"
                                    :output-dir "resources/public/js/out"
                                    :optimizations :none
-                                   :source-map true}}]})
+                                   :source-map true}}]}
+  :repl-options {:init-ns user})
