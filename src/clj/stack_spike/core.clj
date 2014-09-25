@@ -4,7 +4,7 @@
             [bidi.bidi :refer (make-handler)]
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
-            (stack-spike.components
+            (stack-spike.external
              [jetty :refer [new-web-server]]
              [datomic :refer [new-datomic-db]]
              (handler :refer [new-handler])))
@@ -18,13 +18,13 @@
    :db/doc "An exercise's name"
    :db.install/_attribute :db.part/db}])
 
-(defn application []
+(defn application [http-port datomic-uri]
   (component/system-map
-   :datomic-db (new-datomic-db (env :datomic-uri))
+   :datomic-db (new-datomic-db datomic-uri)
    :handler (component/using (new-handler) [:datomic-db])
-   :web (component/using (new-web-server (env :http-port)) [:handler])))
+   :web (component/using (new-web-server http-port) [:handler])))
 
 (defn -main
   "Run the application."
   [& args]
-  (component/start (application)))
+  (component/start (application (env :http-port) (env :datomic-uri) )))

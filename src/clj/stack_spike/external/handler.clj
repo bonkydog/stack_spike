@@ -1,4 +1,4 @@
-(ns stack-spike.components.handler
+(ns stack-spike.external.handler
   (:require [com.stuartsierra.component :as component]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
             [bidi.bidi :refer (make-handler)]

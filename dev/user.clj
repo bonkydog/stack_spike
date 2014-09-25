@@ -11,14 +11,14 @@
 
 (defn init []
   (alter-var-root #'system
-    (constantly (application))))
+                  (constantly (application))))
 
 (defn start []
   (alter-var-root #'system component/start))
 
 (defn stop []
   (alter-var-root #'system
-    (fn [s] (when s (component/stop s)))))
+                  (fn [s] (when s (component/stop s)))))
 
 (defn go []
   (init)

@@ -1,4 +1,4 @@
-(ns stack-spike.components.datomic
+(ns stack-spike.external.datomic
   (:require [com.stuartsierra.component :as component]
             [datomic.api :as d]))
 

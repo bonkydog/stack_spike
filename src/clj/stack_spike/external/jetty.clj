@@ -1,4 +1,4 @@
-(ns stack-spike.components.jetty
+(ns stack-spike.external.jetty
   (:require [com.stuartsierra.component :as component]
             [ring.adapter.jetty :refer [run-jetty]]))
 
@@ -15,3 +15,8 @@
 (defn new-web-server
   [port]
   (map->WebServer {:port port}))
+
+(defn local-port
+  "Returns the port on which the web server is listening."
+  [web-server]
+  (.getLocalPort (first (.getConnectors (:server web-server)))))
