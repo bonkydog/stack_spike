@@ -5,7 +5,7 @@
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
             (stack-spike.external
-             [jetty :refer [new-web-server]]
+             [jetty :refer [new-jetty]]
              [datomic :refer [new-datomic-db]]
              (handler :refer [new-handler])))
   (:gen-class :main true))
@@ -22,7 +22,7 @@
   (component/system-map
    :datomic-db (new-datomic-db datomic-uri)
    :handler (component/using (new-handler) [:datomic-db])
-   :web (component/using (new-web-server http-port) [:handler])))
+   :web (component/using (new-jetty http-port) [:handler])))
 
 (defn -main
   "Run the application."
