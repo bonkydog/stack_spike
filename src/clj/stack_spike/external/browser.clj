@@ -6,7 +6,6 @@
   component/Lifecycle
   (start [component]
     (let [browser (new-driver {:browser :firefox})]
-
       (set-driver! browser)
       (implicit-wait 3000)
       ;;(.addShutdownHook (Runtime/getRuntime) (Thread. #(quit browser)))

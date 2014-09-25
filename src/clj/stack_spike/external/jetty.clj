@@ -13,6 +13,7 @@
       component)))
 
 (defn new-web-server
+  "Creates a new Jetty web server component."
   [port]
   (map->WebServer {:port port}))
 
@@ -20,3 +21,13 @@
   "Returns the port on which the web server is listening."
   [web-server]
   (.getLocalPort (first (.getConnectors (:server web-server)))))
+
+(defn local-host
+  "Returns this machine's host name."
+  []
+  (.getHostName (java.net.InetAddress/getLocalHost)))
+
+(defn root-url
+  "Returns the URL of the root for the website."
+  [web-server]
+  (str "http://" (local-host) ":" (local-port web-server) "/"))

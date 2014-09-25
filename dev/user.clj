@@ -3,6 +3,7 @@
   not be included in a production build of the application."
   (:require [com.stuartsierra.component :as component]
             [clojure.tools.namespace.repl :refer (refresh)]
+            [environ.core :refer [env]]
             [stack-spike.core :refer :all]
             [clojure.test]
             [clojure.stacktrace :refer [print-stack-trace print-cause-trace]]))
@@ -11,7 +12,7 @@
 
 (defn init []
   (alter-var-root #'system
-                  (constantly (application))))
+                  (constantly (application (env :http-port) (env :datomic-uri) ))))
 
 (defn start []
   (alter-var-root #'system component/start))
