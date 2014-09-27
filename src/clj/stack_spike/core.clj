@@ -5,9 +5,10 @@
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
             (stack-spike.external
-             [jetty :refer [new-jetty]]
+             [web :refer [new-web]]
              [datomic :refer [new-datomic-db]]
-             (handler :refer [new-handler])))
+             (handler :refer [new-handler])
+             (browser :refer [new-browser])))
   (:gen-class :main true))
 
 (def schema
@@ -18,13 +19,14 @@
    :db/doc "An exercise's name"
    :db.install/_attribute :db.part/db}])
 
-(defn application [http-port datomic-uri]
+(defn application [http-port datomic-uri test?]
   (component/system-map
    :datomic-db (new-datomic-db datomic-uri)
    :handler (component/using (new-handler) [:datomic-db])
-   :web (component/using (new-jetty http-port) [:handler])))
+   :web (component/using (new-web http-port) [:handler])
+   :browser (if test? (component/using (new-browser) [:web]))))
 
 (defn -main
   "Run the application."
   [& args]
-  (component/start (application (env :http-port) (env :datomic-uri) )))
+  (component/start (application (env :http-port) (env :datomic-uri) false)))

@@ -1,27 +1,15 @@
 (ns stack-spike.behavior.hello-world-test
-  (:require [clojure.test :refer :all]
+  (:require [clj-webdriver.taxi :refer :all]
+            [clojure.test :refer :all]
             [stack-spike.core-test :refer :all]
-            [clj-webdriver.taxi :refer :all]
-            [stack-spike.core :refer [application]]
-            [stack-spike.external.browser :refer [new-browser]]
-            [com.stuartsierra.component :as component]))
-
-
-
+            [stack-spike.external.browser :refer [visit]]
+            [stack-spike.utility.debug :refer [dbg]]))
 
 (use-fixtures :each
   (fn [t]
     (init-and-start-test-system)
     (t)
     (stop-test-system)))
-
-(defn test-url [path]
-  (str "http://localhost:"
-       (stack-spike.external.jetty/local-port (:web test-system))
-       path))
-
-(defn visit [path]
-  (to (test-url path)))
 
 (defn assert-text-present [expected-content]
   (let [actual-content (text (find-element {:css "body"}))]
@@ -33,10 +21,10 @@
 
 (deftest feature-home-page
   (testing "visting the home page"
-    (visit "/")
+    (visit (:browser test-system) "/")
     (assert-text-present "Hello")))
 
 (deftest failing-feature-home-page
   (testing "visting the home page"
-    (visit "/")
+    (visit (:browser test-system) "/")
     (assert-text-present "Smello")))

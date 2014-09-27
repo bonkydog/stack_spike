@@ -1,8 +1,9 @@
-(ns stack-spike.external.jetty
+(ns stack-spike.external.web
   (:require [com.stuartsierra.component :as component]
-            [ring.adapter.jetty :refer [run-jetty]]))
+            [ring.adapter.jetty :refer [run-jetty]]
+            [stack-spike.utility.debug :refer [dbg]]))
 
-(defrecord Jetty [port server handler]
+(defrecord Web [port server handler]
   component/Lifecycle
   (start [component]
     (let [server (run-jetty (:handler handler) {:port port :join? false})]
@@ -12,10 +13,10 @@
       (.stop server)
       component)))
 
-(defn new-jetty
-  "Creates a new Jetty web server component."
+(defn new-web
+  "Creates a new (Jetty) web server component."
   [port]
-  (map->Jetty {:port port}))
+  (map->Web {:port port}))
 
 (defn local-port
   "Returns the port on which the web server is listening."
