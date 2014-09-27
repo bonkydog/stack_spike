@@ -22,6 +22,7 @@
                   (fn [s] (when s (component/stop s)))))
 
 (defn go []
+  (stop)
   (init)
   (start))
 
