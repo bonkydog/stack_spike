@@ -19,14 +19,13 @@
    :db/doc "An exercise's name"
    :db.install/_attribute :db.part/db}])
 
-(defn application [http-port datomic-uri test?]
+(defn application [http-port datomic-uri]
   (component/system-map
    :datomic-db (new-datomic-db datomic-uri)
    :handler (component/using (new-handler) [:datomic-db])
-   :web (component/using (new-web http-port) [:handler])
-   :browser (if test? (component/using (new-browser) [:web]))))
+   :web (component/using (new-web http-port) [:handler])))
 
 (defn -main
   "Run the application."
   [& args]
-  (component/start (application (env :http-port) (env :datomic-uri) false)))
+  (component/start (application (env :http-port) (env :datomic-uri))))

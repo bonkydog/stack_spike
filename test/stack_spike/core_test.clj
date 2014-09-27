@@ -5,13 +5,16 @@
 
 (def test-system nil)
 
+(defn test-application [http-port datomic-uri]
+  (assoc (application http-port datomic-uri)
+    :browser (component/using (new-browser) [:web])))
 
 (defn test-db-uri []
   (str "datomic:mem://stack-spike-test-" (.getId (Thread/currentThread))))
 
 (defn init-and-start-test-system []
   (alter-var-root #'test-system
-                  (constantly  (application 0 (test-db-uri) :test)))
+                  (constantly  (test-application 0 (test-db-uri))))
   (alter-var-root #'test-system component/start))
 
 (defn stop-test-system []
