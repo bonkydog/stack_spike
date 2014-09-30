@@ -7,8 +7,7 @@
             (stack-spike.external
              [web :refer [new-web]]
              [datomic :refer [new-datomic-db]]
-             (handler :refer [new-handler])
-             (browser :refer [new-browser])))
+             (handler :refer [new-handler])))
   (:gen-class :main true))
 
 (def schema

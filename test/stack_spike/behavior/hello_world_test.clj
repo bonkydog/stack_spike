@@ -1,22 +1,19 @@
 (ns stack-spike.behavior.hello-world-test
   (:require [clj-webdriver.taxi :refer :all]
             [clojure.test :refer :all]
+            [clj-webdriver.taxi :as taxi]
             [stack-spike.core-test :refer :all]
-            [stack-spike.external.browser :refer [visit assert-text-present]]
+            [stack-spike.behavior.browser :refer :all]
             [stack-spike.utility.debug :refer [dbg]]))
 
-(use-fixtures :each
-  (fn [t]
-    (init-and-start-test-system)
-    (t)
-    (stop-test-system)))
+(use-fixtures :once browser-session-fixture)
 
-(deftest feature-home-page
+(defsystest feature-home-page [sys]
   (testing "visting the home page"
-    (visit (:browser test-system) "/")
-    (assert-text-present (:browser test-system) "Hello")))
+    (visit sys "/")
+    (assert-text-present "Hello")))
 
-(deftest failing-feature-home-page
+(defsystest failing-feature-home-page [sys]
   (testing "visting the home page"
-    (visit (:browser test-system) "/")
-    (assert-text-present (:browser test-system) "Smello")))
+    (visit sys "/")
+    (assert-text-present "Smello")))

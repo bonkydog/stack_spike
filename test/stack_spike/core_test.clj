@@ -1,21 +1,21 @@
 (ns stack-spike.core-test
   (:require [com.stuartsierra.component :as component]
-            [stack-spike.core :refer :all]
-            [stack-spike.external.browser :refer [new-browser]]))
-
-(def test-system nil)
-
-(defn test-application [http-port datomic-uri]
-  (assoc (application http-port datomic-uri)
-    :browser (component/using (new-browser) [:web])))
+            [clojure.test]
+            [stack-spike.core :refer :all]))
 
 (defn test-db-uri []
   (str "datomic:mem://stack-spike-test-" (.getId (Thread/currentThread))))
 
-(defn init-and-start-test-system []
-  (alter-var-root #'test-system
-                  (constantly  (test-application 0 (test-db-uri))))
-  (alter-var-root #'test-system component/start))
+(defn test-application []
+  (application 0, (test-db-uri)))
 
-(defn stop-test-system []
-    (alter-var-root #'test-system component/stop))
+(defmacro defsystest
+  "Define a test wrapped in a test system setup/teardown.  The system's
+  Browser component will be supplied as an argument."
+  [name [system-argument] & forms]
+  `(clojure.test/deftest ~name []
+     (let [system# (component/start (test-application))]
+       (try
+         (let [~system-argument system#]
+           ~@forms)
+         (finally (component/stop system#))))))
