@@ -8,7 +8,7 @@
     (d/create-database uri)
     (assoc component :uri uri))
   (stop [component]
-    (assoc component :uri nil)))
+    (dissoc component :uri)))
 
 (defn new-datomic-db [uri]
   (map->Datomic {:uri uri}))

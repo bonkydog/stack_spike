@@ -9,9 +9,9 @@
     (let [server (run-jetty (:handler handler) {:port port :join? false})]
       (assoc component :server server)))
   (stop [component]
-    (when server
-      (.stop server)
-      component)))
+    (when (:server component)
+      (.stop (:server component))
+      (dissoc component :server))))
 
 (defn new-web
   "Creates a new (Jetty) web server component."

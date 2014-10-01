@@ -1,20 +1,18 @@
 (ns stack-spike.behavior.page.ship.index
-  (:require [clojure.test :refer :all]))
+  (:require [clojure.test :refer :all]
+            [stack-spike.behavior.browser :as browser]
+            [clj-webdriver.taxi :refer :all]))
 
-(defn visit
-  "Visit the ship index page."
-  []
-  ;; STUB
-  )
+(def path "/ships")
 
-(defn arrive []
-  ;;STUB
-  )
+(defn visit [sys]
+  (browser/visit sys path))
+
+(defn arrive [sys]
+  (browser/arrive sys path))
 
 (defn assert-no-ships-listed []
-  ;;STUB
-  )
+  (is (exists? "a.ship")))
 
 (defn assert-test-ship-listed []
-  ;;STUB
-  )
+  (is  (find-element {:css "a.ship" :text "Test Ship"})))

@@ -19,8 +19,6 @@
 (def routes
   (make-handler ["/" home]))
 
-(def handler routes)
-
 (defrecord Handler [datomic-db handler]
   component/Lifecycle
   (start [component]
@@ -29,7 +27,7 @@
                     (wrap-datomic-conn (:uri datomic-db))
                     wrap-stacktrace-web)))
   (stop [component]
-    (assoc component :handler nil)))
+    (dissoc component :handler)))
 
 (defn new-handler []
   (map->Handler {}))
