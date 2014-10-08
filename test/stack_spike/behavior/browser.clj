@@ -1,17 +1,22 @@
 (ns stack-spike.behavior.browser
-  (:require [clojure.test :refer :all]
-            [clj-webdriver.taxi :refer :all]
-            [stack-spike.external.web :as web]
-            [clojure.string :as s]))
+  (:require [clj-webdriver.taxi :refer :all]
+            [clojure.string :as s]
+            [clojure.test :refer :all]
+            [stack-spike.external.web :as web]))
+
+(def browser :firefox)
+(def seconds-to-wait 500)
+
+(defn setup-browser-session! []
+  (try
+    (implicit-wait *driver* seconds-to-wait)
+    (catch Exception e
+      (set-driver! (new-driver {:browser browser}))))
+  *driver*)
 
 (defn browser-session-fixture [t]
-  (let [driver (new-driver {:browser :firefox})]
-    (set-driver! driver)
-    (implicit-wait driver 3000)
-    ;;(.addShutdownHook (Runtime/getRuntime) (Thread. #(quit driver)))
-    (t)
-    (quit driver)
-    ))
+  (setup-browser-session!)
+  (t))
 
 (defn path->url [sys path]
   (str (web/root-url (:web sys)) (s/replace-first path #"^/" "")))
@@ -22,7 +27,7 @@
 (defn arrive [sys path]
   (let [expected-url (path->url sys path)]
     (try
-      (wait-until (fn [] (= expected-url (current-url)) ))
+      (wait-until (fn [] (= expected-url (current-url)) ) seconds-to-wait)
       (catch org.openqa.selenium.TimeoutException e
         (let [actual-url (current-url)]
           ;; we assert instead of calling "is" here, because if we're on the wrong page we may as well quit.
