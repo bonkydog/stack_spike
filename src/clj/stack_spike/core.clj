@@ -6,7 +6,7 @@
             [environ.core :refer [env]]
             (stack-spike.external
              [web-server-jetty :refer [new-web-server-jetty]]
-             [datomic :refer [new-datomic-db]]
+             [database-datomic :refer [new-database-datomic]]
              (handler :refer [new-handler])))
   (:gen-class :main true))
 
@@ -20,7 +20,7 @@
 
 (defn application [http-port datomic-uri]
   (component/system-map
-   :datomic-db (new-datomic-db datomic-uri)
+   :datomic-db (new-database-datomic datomic-uri)
    :handler (component/using (new-handler) [:datomic-db])
    :web (component/using (new-web-server-jetty http-port) [:handler])))
 
