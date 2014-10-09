@@ -1,30 +1,30 @@
 (ns stack-spike.external.handler
   (:require [com.stuartsierra.component :as component]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
+            [liberator.dev :refer [wrap-trace]]
             [bidi.bidi :refer (make-handler)]
-            [liberator.core :refer [defresource]]
-            [datomic.api :as d]))
+            [datomic.api :as d]
+            (stack-spike.external.resource
+             [ship :as ship]
+             [home :as home])))
 
 
 (defn wrap-datomic-conn [handler datomic-uri]
   (fn [request]
     (handler (assoc request :conn (d/connect datomic-uri)))))
 
-(defresource home
-  :available-media-types ["text/plain"]
-  :handle-ok (fn [ctx]
-               (str "Hello, world! Here is my database connection: "
-                    (get-in ctx [:request :conn]))))
-
 (def routes
-  (make-handler ["/" home]))
+  ["/" {"" home/home
+        "ships" ship/ship-list
+        ["ships/" :id] ship/ship}])
 
 (defrecord Handler [datomic-db handler]
   component/Lifecycle
   (start [component]
     (assoc component
-      :handler (->  routes
+      :handler (->  (make-handler routes)
                     (wrap-datomic-conn (:uri datomic-db))
+                    (wrap-trace :header :ui)
                     wrap-stacktrace-web)))
   (stop [component]
     (dissoc component :handler)))
