@@ -10,14 +10,10 @@
              [home :as home])))
 
 
-(defn wrap-datomic-conn [handler datomic-uri]
-  (fn [request]
-    (handler (assoc request :conn (d/connect datomic-uri)))))
-
-(def routes
-  ["/" {"" home/home
-        "ships" ship/ship-list
-        ["ships/" :id] ship/ship}])
+(defn routes [db]
+  ["/" {"" (home/home db)
+        "ships" (ship/ship-list db)
+        ["ships/" :id]  (ship/ship db)}])
 
 (defrecord WebApplicationStackSpike [db handler]
 
@@ -33,10 +29,9 @@
   web-application/WebApplication
 
   (handler [this]
-    (->  (make-handler routes)
-                    (wrap-datomic-conn (:uri db))
-                    (wrap-trace :header :ui)
-                    wrap-stacktrace-web)))
+    (->  (make-handler (routes (:db this)))
+         (wrap-trace :header :ui)
+         wrap-stacktrace-web)))
 
 
 (defn new-web-application-stack-spike []
