@@ -8,7 +8,7 @@
             [clojure.test]
             [clojure.stacktrace :refer [print-stack-trace print-cause-trace]]))
 
-(def system nil)
+(defonce system nil)
 
 (defn init []
   (alter-var-root #'system
@@ -22,6 +22,7 @@
                   (fn [s] (when s (component/stop s)))))
 
 (defn go []
+  (if system (stop))
   (init)
   (start))
 
