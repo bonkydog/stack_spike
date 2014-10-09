@@ -1,5 +1,6 @@
-(ns stack-spike.external.handler
-  (:require [com.stuartsierra.component :as component]
+(ns stack-spike.external.web-application-stack-spike
+  (:require [stack-spike.external.web-application :as web-application]
+            [com.stuartsierra.component :as component]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
             [liberator.dev :refer [wrap-trace]]
             [bidi.bidi :refer (make-handler)]
@@ -18,16 +19,25 @@
         "ships" ship/ship-list
         ["ships/" :id] ship/ship}])
 
-(defrecord Handler [datomic-db handler]
+(defrecord WebApplicationStackSpike [db handler]
+
   component/Lifecycle
+
   (start [component]
     (assoc component
-      :handler (->  (make-handler routes)
-                    (wrap-datomic-conn (:uri datomic-db))
+      :handler (web-application/handler component)))
+
+  (stop [component]
+    (dissoc component :handler))
+
+  web-application/WebApplication
+
+  (handler [this]
+    (->  (make-handler routes)
+                    (wrap-datomic-conn (:uri db))
                     (wrap-trace :header :ui)
                     wrap-stacktrace-web)))
-  (stop [component]
-    (dissoc component :handler)))
 
-(defn new-handler []
-  (map->Handler {}))
+
+(defn new-web-application-stack-spike []
+  (map->WebApplicationStackSpike {}))

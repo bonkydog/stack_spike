@@ -7,7 +7,7 @@
             (stack-spike.external
              [web-server-jetty :refer [new-web-server-jetty]]
              [database-datomic :refer [new-database-datomic]]
-             (handler :refer [new-handler])))
+             (web-application-stack-spike :refer [new-web-application-stack-spike])))
   (:gen-class :main true))
 
 (def schema
@@ -20,9 +20,9 @@
 
 (defn application [http-port datomic-uri]
   (component/system-map
-   :datomic-db (new-database-datomic datomic-uri)
-   :handler (component/using (new-handler) [:datomic-db])
-   :web (component/using (new-web-server-jetty http-port) [:handler])))
+   :db (new-database-datomic datomic-uri)
+   :app (component/using (new-web-application-stack-spike) [:db])
+   :web (component/using (new-web-server-jetty http-port) [:app])))
 
 (defn -main
   "Run the application."

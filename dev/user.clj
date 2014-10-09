@@ -6,7 +6,8 @@
             [environ.core :refer [env]]
             [stack-spike.core :refer :all]
             [clojure.test]
-            [clojure.stacktrace :refer [print-stack-trace print-cause-trace]]))
+            [clojure.stacktrace :refer [print-stack-trace print-cause-trace]]
+            [clojure.pprint :refer :all]))
 
 (defonce system nil)
 

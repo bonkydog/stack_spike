@@ -2,7 +2,7 @@
   (:require [clj-webdriver.taxi :refer :all]
             [clojure.string :as s]
             [clojure.test :refer :all]
-            [stack-spike.external.web :as web]))
+            [stack-spike.external.web-server :as web]))
 
 (def browser :firefox)
 (def seconds-to-wait 500)

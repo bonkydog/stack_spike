@@ -4,12 +4,12 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [stack-spike.utility.debug :refer [dbg]]))
 
-(defrecord WebServerJetty [port server handler]
+(defrecord WebServerJetty [port server app]
 
   component/Lifecycle
 
   (start [component]
-    (let [server (run-jetty (:handler handler) {:port port :join? false})]
+    (let [server (run-jetty (:handler app) {:port port :join? false})]
       (assoc component :server server)))
 
   (stop [component]
