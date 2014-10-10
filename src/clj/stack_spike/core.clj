@@ -12,10 +12,10 @@
 
 (def schema
   [{:db/id #db/id[:db.part/db]
-   :db/ident :exercise/name
+   :db/ident :ship/name
    :db/valueType :db.type/string
    :db/cardinality :db.cardinality/one
-   :db/doc "An exercise's name"
+   :db/doc "An ship's name"
    :db.install/_attribute :db.part/db}])
 
 (defn application [http-port datomic-uri]
