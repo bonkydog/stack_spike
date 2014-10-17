@@ -10,14 +10,6 @@
              (web-application-stack-spike :refer [new-web-application-stack-spike])))
   (:gen-class :main true))
 
-(def schema
-  [{:db/id #db/id[:db.part/db]
-   :db/ident :ship/name
-   :db/valueType :db.type/string
-   :db/cardinality :db.cardinality/one
-   :db/doc "An ship's name"
-   :db.install/_attribute :db.part/db}])
-
 (defn application [http-port datomic-uri]
   (component/system-map
    :db (new-database-datomic datomic-uri)

@@ -10,12 +10,6 @@
 
   (load-schema [this schema]
     "Load a schema into the database.")
-  
-  (retrieve-entity [this id]
-    "Fetch the entity with the requested id.")
 
-  (store-entity [this entity]
-    "Store the entity in the database.")
-  
-  (list-entities [this type]
-    "Fetch all entities of the requested type."))
+  (entity-gateway [this]
+    "Create an entity gateway for this database."))

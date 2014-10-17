@@ -1,4 +1,4 @@
-(ns stack-spike.external.resource.home
+(ns stack-spike.interface.resource.home
   (:require [liberator.core :refer [defresource]]))
 
 (defresource home [db]

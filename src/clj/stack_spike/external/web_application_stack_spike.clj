@@ -5,7 +5,7 @@
             [liberator.dev :refer [wrap-trace]]
             [bidi.bidi :refer (make-handler)]
             [datomic.api :as d]
-            (stack-spike.external.resource
+            (stack-spike.interface.resource
              [ship :as ship]
              [home :as home])))
 

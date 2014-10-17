@@ -2,7 +2,8 @@
   (:require [com.stuartsierra.component :as component]
             [datomic.api :as d :refer [db q]]
             [stack-spike.external.database :as database]
-            [stack-spike.utility.debug :refer [dbg]]))
+            [stack-spike.utility.debug :refer [dbg]]
+            [stack-spike.external.entity-gateway-datomic :refer [new-entity-gateway-datomic]]))
 
 (defn- conn [this]
   (d/connect (:uri this)))
@@ -31,20 +32,10 @@
 
   (load-schema [this schema]
     @(d/transact (conn this) schema))
-  
-  (retrieve-entity [this id]
-    (d/entity (dbv this) id))
 
-  (store-entity [this entity]
-    @(d/transact (conn this) entity))
-  
-  (list-entities [this type]
-    (let [name-attribute (keyword (str type "/name"))]
-      (->> (q '[:find ?e :in $ ?attr :where [?e ?attr]] (dbv this) name-attribute)
-           (map first)
-           sort
-           (map #(d/entity (dbv this) %))
-           (map d/touch)))))
+  (entity-gateway [this]
+    "Create an entity gateway for this database."
+    (new-entity-gateway-datomic this)))
 
 (defn new-database-datomic [uri]
   (map->DatabaseDatomic {:uri uri}))
