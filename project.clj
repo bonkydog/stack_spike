@@ -15,7 +15,7 @@
                  [ring/ring "1.3.1"]
                  [ring-transit "0.1.2"]
                  [http-kit "2.1.16"]
-                 [bidi "1.10.4"]
+                 [bidi "1.10.5"]
                  [liberator "0.12.3-SNAPSHOT"]
                  [hiccup "1.0.5"]
                  [com.datomic/datomic-pro "0.9.4815"]

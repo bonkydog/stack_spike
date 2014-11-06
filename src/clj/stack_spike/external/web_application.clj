@@ -2,6 +2,6 @@
 
 (defprotocol WebApplication
 
-  (handler [this]
-    "Returns a ring handler for the application."))
+  (make-handler [this]
+    "Builds a ring handler for the application."))
 

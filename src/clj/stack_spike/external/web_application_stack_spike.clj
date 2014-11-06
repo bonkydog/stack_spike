@@ -3,33 +3,36 @@
             [com.stuartsierra.component :as component]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
             [liberator.dev :refer [wrap-trace]]
-            [bidi.bidi :refer (make-handler)]
+            [bidi.bidi :as b]
             [datomic.api :as d]
             (stack-spike.interface.resource
              [ship :as ship]
              [home :as home])))
+(def routes
+  ["/" {"" :home
+        "ships" :ships
+        ["ships/" :id] :ship}])
 
+(defn make-resources [db]
+  {:home (home/home db)
+   :ship (ship/ship db)
+   :ships (ship/ship-list db)})
 
-(defn routes [db]
-  ["/" {"" (home/home db)
-        "ships" (ship/ship-list db)
-        ["ships/" :id]  (ship/ship db)}])
-
-(defrecord WebApplicationStackSpike [db handler]
+(defrecord WebApplicationStackSpike [db handler resources]
 
   component/Lifecycle
 
   (start [component]
     (assoc component
-      :handler (web-application/handler component)))
+      :handler (web-application/make-handler component)))
 
   (stop [component]
     (dissoc component :handler))
 
   web-application/WebApplication
 
-  (handler [this]
-    (->  (make-handler (routes (:db this)))
+  (make-handler [this]
+    (->  (b/make-handler routes (make-resources (:db this)))
          (wrap-trace :header :ui)
          wrap-stacktrace-web)))
 
