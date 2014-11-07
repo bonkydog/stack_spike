@@ -8,8 +8,8 @@
 (defresource ship [db]
   :available-media-types ["text/html"]
   :exist? (fn [ctx] )
-  :handle-ok (fn [ctx] (view-ship (entity-gateway db) (Long/parseLong (get-in ctx [:request :params :id])) ship-presenter/present-ship-show)))
+  :handle-ok (fn [ctx] (ship-presenter/present-ship-show (view-ship (entity-gateway db) (Long/parseLong (get-in ctx [:request :params :id]))))))
 
 (defresource ship-list [db]
   :available-media-types ["text/html"]
-  :handle-ok (fn [req] (list-ships (entity-gateway db) ship-presenter/present-ship-index)))
+  :handle-ok (fn [req] (ship-presenter/present-ship-index (list-ships (entity-gateway db)))))
