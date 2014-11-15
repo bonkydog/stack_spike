@@ -5,18 +5,8 @@
             [liberator.dev :refer [wrap-trace]]
             [bidi.bidi :as b]
             [datomic.api :as d]
-            (stack-spike.interface.resource
-             [ship :as ship]
-             [home :as home])))
-(def routes
-  ["/" {"" :home
-        "ships" :ships
-        ["ships/" :id] :ship}])
-
-(defn make-resources [db]
-  {:home (home/home db)
-   :ship (ship/ship db)
-   :ships (ship/ship-list db)})
+            [stack-spike.interface.routes :refer [routes]]
+            [stack-spike.interface.resources :refer [resources]]))
 
 (defrecord WebApplicationStackSpike [db handler resources]
 
@@ -32,7 +22,7 @@
   web-application/WebApplication
 
   (make-handler [this]
-    (->  (b/make-handler routes (make-resources (:db this)))
+    (->  (b/make-handler stack-spike.interface.routes/routes (stack-spike.interface.resources/resources (:db this)))
          (wrap-trace :header :ui)
          wrap-stacktrace-web)))
 
