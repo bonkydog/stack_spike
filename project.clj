@@ -13,6 +13,7 @@
                  [om "0.7.1"]
                  [om-sync "0.1.1"]
                  [ring/ring "1.3.1"]
+                 [ring-jetty-component "0.2.2"]
                  [ring-transit "0.1.2"]
                  [http-kit "2.1.16"]
                  [bidi "1.10.5"]

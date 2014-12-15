@@ -15,6 +15,7 @@
   (stop [component]
     (when (:server component)
       (.stop (:server component))
+      (.join (:server component))
       (dissoc component :server)))
 
   web-server/WebServer
