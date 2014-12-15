@@ -6,7 +6,6 @@
 
   (store-entity [this entity]
     "Store entity in the database.")
-  
+
   (retrieve-entities [this type]
     "Retrieve all entities of the requested type."))
-

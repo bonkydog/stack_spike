@@ -41,4 +41,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Miscellaneous tools
 
-(defn show-methods [x] (sort (filter #(not (re-find #"^(__|const)" (str %))) (map :name (:members (clojure.reflect/reflect x))))))
+(defn show-methods [x] (sort
+                        (filter
+                         #(not (re-find #"^(__|const)" (str %)))
+                                (map :name (:members (clojure.reflect/reflect x))))))

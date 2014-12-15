@@ -16,7 +16,7 @@
 
   (store-entity [this entity]
     @(d/transact (conn this) entity))
-  
+
   (retrieve-entities [this type]
     (let [name-attribute (str type "/name")]
       (->> (q '[:find ?e :in $ ?attr :where [?e ?attr]] (dbv this) name-attribute)
@@ -35,4 +35,3 @@
    :db/cardinality :db.cardinality/one
    :db/doc "An ship's name"
    :db.install/_attribute :db.part/db}])
-
