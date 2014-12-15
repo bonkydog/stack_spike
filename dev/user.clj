@@ -7,7 +7,11 @@
             [stack-spike.core :refer :all]
             [clojure.test]
             [clojure.stacktrace :refer [print-stack-trace print-cause-trace]]
-            [clojure.pprint :refer :all]))
+            [clojure.pprint :refer :all]
+            [clojure.tools.logging :as log]
+            [stack-spike.external.database :refer [entity-gateway]]
+            [stack-spike.use-case.entity-gateway :as eg]))
+
 
 (defonce system nil)
 
@@ -23,13 +27,13 @@
                   (fn [s] (when s (component/stop s)))))
 
 (defn go []
-  (if system (stop))
   (init)
   (start))
 
 (defn reset []
   (stop)
   (refresh :after 'user/go))
+
 
 (defn run-tests
   []
@@ -45,3 +49,7 @@
                         (filter
                          #(not (re-find #"^(__|const)" (str %)))
                                 (map :name (:members (clojure.reflect/reflect x))))))
+
+(defn eg []
+  "Get an entity gateway for the current system."
+  (entity-gateway (:db system)))
