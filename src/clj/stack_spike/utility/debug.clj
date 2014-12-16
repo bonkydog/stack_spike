@@ -9,5 +9,5 @@
      (when *debug*
        (with-bindings {#'clojure.pprint/*print-miser-width* 120
                        #'clojure.pprint/*print-right-margin* 160}
-         (debug (str "dbg: " (quote ~@body) " = " x#))))
+         (debug (str (quote ~@body) " = " x#))))
      x#))
