@@ -9,3 +9,4 @@ pom.xml.asc
 /.nrepl-port
 *.iml
 profiles.clj
+log/stack_spike.log
