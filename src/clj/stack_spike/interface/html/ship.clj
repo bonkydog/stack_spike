@@ -1,8 +1,8 @@
 (ns stack-spike.interface.html.ship
   (:require [stack-spike.interface.routes :refer [routes]]
-            [bidi.bidi :refer [path-for]]
             [hiccup.core :refer [html]]
-            [hiccup.element :refer [link-to]]))
+            [hiccup.element :refer [link-to]]
+            [stack-spike.utility.debug :refer [dbg]]))
 
 
 (defn show [ship]
@@ -20,8 +20,8 @@
         [:th "id"]
         [:th "name"]]
        [:tbody
-        (map (fn [ship] 
+        (map (fn [ship]
                [:tr
-                [:td (link-to (path-for routes :ship :id (:db/id ship)) (:db/id ship))]
+                [:td (link-to (:path ship) (:db/id ship))]
                 [:td (:ship/name ship)]])
              ships)]]]]]))

@@ -4,3 +4,5 @@
 (defn view-ship [entity-gateway id]
   (eg/retrieve-entity entity-gateway id))
 
+(defn new-ship []
+  {:name ""})
