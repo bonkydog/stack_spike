@@ -4,8 +4,8 @@
             [bidi.bidi :refer (make-handler)]
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
-            [ring.component.jetty :refer [jetty-server]]
             (stack-spike.external
+             [web-server-jetty :refer [new-web-server-jetty]]
              [database-datomic :refer [new-database-datomic]]
              (web-application-stack-spike :refer [new-web-application-stack-spike])))
   (:gen-class :main true))
@@ -14,7 +14,7 @@
   (component/system-map
    :db (new-database-datomic datomic-uri)
    :app (component/using (new-web-application-stack-spike) [:db])
-   :web (component/using (jetty-server {:port http-port}) [:app])))
+   :web (component/using (new-web-server-jetty http-port) [:app])))
 
 (defn -main
   "Run the application."
