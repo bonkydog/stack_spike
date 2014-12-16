@@ -8,11 +8,14 @@
 (defn- dbv [this]
   (db (conn this)))
 
+(defn entity->map [e]
+  (assoc  (into {} (d/touch e)) :db/id (:db/id e)))
+
 (defrecord EntityGatewayDatomic [db]
   eg/EntityGateway
 
   (retrieve-entity [this id]
-    (d/touch (d/entity (dbv this) id)))
+    (entity->map (d/entity (dbv this) id)))
 
   (store-entity [this entity]
     @(d/transact (conn this) entity))
@@ -23,7 +26,7 @@
            (map first)
            sort
            (map #(d/entity (dbv this) %))
-           (map d/touch)))))
+           (map entity->map)))))
 
 (defn new-entity-gateway-datomic [db]
   (map->EntityGatewayDatomic {:db db}))
