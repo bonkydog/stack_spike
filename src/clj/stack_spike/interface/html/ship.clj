@@ -2,13 +2,19 @@
   (:require [stack-spike.interface.routes :refer [routes]]
             [hiccup.core :refer [html]]
             [hiccup.element :refer [link-to]]
+            [hiccup.form :refer :all]
             [stack-spike.utility.debug :refer [dbg]]))
 
 
 (defn show [ship]
+  (dbg ship)
   (html [:html
          [:body
-          [:p (str "Hello, this is the ship page for " (:ship/name ship))]]]))
+          [:p (str "Hello, this is the ship page for " (:ship/name ship))]
+          (form-to [:put (:path ship)]
+                   (label "name" "Name")
+                   (text-field "name" (:ship/name ship))
+                   (submit-button "Update Ship"))]]))
 
 (defn index [ships]
   (html

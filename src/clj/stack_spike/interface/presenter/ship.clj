@@ -5,11 +5,14 @@
             [stack-spike.utility.debug :refer [dbg]]))
 
 (defn ship-path [ship]
-  (b/path-for r/routes :ship :id (:db/id ship)))
+  (b/path-for r/routes :ship :id (or (:db/id ship) "new")))
+
+(defn assoc-ship-path [ship]
+  (assoc ship :path (ship-path ship)))
 
 (defn present-ship-index [ships]
-  (let [view (map (fn [ship] (assoc ship :path (ship-path ship))) ships)]
+  (let [view (map assoc-ship-path ships)]
     (html/index view)))
 
 (defn present-ship-show [ship]
-  (html/show ship))
+  (html/show (assoc-ship-path ship)))

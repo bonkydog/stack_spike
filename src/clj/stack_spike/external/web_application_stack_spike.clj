@@ -22,9 +22,11 @@
   web-application/WebApplication
 
   (make-handler [this]
-    (->  (b/make-handler stack-spike.interface.routes/routes (stack-spike.interface.resources/resources (:db this)))
-         (wrap-trace :header :ui)
-         wrap-stacktrace-web)))
+    (->  (b/make-handler
+          stack-spike.interface.routes/routes
+          (stack-spike.interface.resources/resources (:db this)))
+      (wrap-trace :header :ui)
+      wrap-stacktrace-web)))
 
 
 (defn new-web-application-stack-spike []
