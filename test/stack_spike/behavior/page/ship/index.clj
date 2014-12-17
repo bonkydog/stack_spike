@@ -5,11 +5,11 @@
 
 (def path "/ships")
 
-(defn visit [sys]
-  (browser/visit sys path))
+(defn visit []
+  (browser/visit path))
 
-(defn arrive [sys]
-  (browser/arrive sys path))
+(defn arrive []
+  (browser/arrive path))
 
 (defn assert-no-ships-listed []
   (is (not (exists? "a.ship"))))

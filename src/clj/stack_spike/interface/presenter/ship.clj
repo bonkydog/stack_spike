@@ -1,14 +1,13 @@
 (ns stack-spike.interface.presenter.ship
   (:require [stack-spike.interface.html.ship :as html]
             [stack-spike.interface.routes :as r]
-            [bidi.bidi :as b]
             [stack-spike.utility.debug :refer [dbg]]))
 
 (defn ship-path [ship]
-  (b/path-for r/routes :ship :id (or (:db/id ship) "new")))
+  (r/path-for :ship :id (or (:db/id ship) "new")))
 
 (defn ships-path []
-  (b/path-for r/routes :ships))
+  (r/path-for :ships))
 
 (defn assoc-paths [ship]
   (assoc ship

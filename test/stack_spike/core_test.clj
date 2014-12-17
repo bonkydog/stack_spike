@@ -1,9 +1,11 @@
 (ns stack-spike.core-test
   (:require [com.stuartsierra.component :as component]
             [clojure.test]
+            [clj-webdriver.taxi :as taxi]
             [stack-spike.external.database :as db]
             [stack-spike.core :refer :all]
-            [stack-spike.external.url :refer [local-host-name unused-port]]))
+            [stack-spike.external.url :refer [local-host-name unused-port local-root-url]]
+            [cemerick.url :refer [url]] ))
 
 (defn test-db-uri []
   (str "datomic:mem://stack-spike-test-" (.getId (Thread/currentThread))))
@@ -20,15 +22,37 @@
   ;; for now.)
   (application (local-host-name) (unused-port) (test-db-uri)))
 
-(defmacro defsystest
-  "Define a test wrapped in a test system setup/teardown.  The system's
-  Browser component will be supplied as an argument."
-  [name [system-argument] & forms]
-  `(clojure.test/deftest ~name []
-     (let [system# (component/start (test-application))]
-       (try
-         (let [~system-argument system#]
-           ~@forms)
-         (finally
-           (db/destroy (:db system#))
-           (component/stop system#))))))
+(def browser :firefox)
+
+(def seconds-to-wait 500)
+
+(defn setup-browser-session! []
+  (try
+    (taxi/implicit-wait taxi/*driver* seconds-to-wait)
+    (catch Exception e
+      (taxi/set-driver! (taxi/new-driver {:browser browser}))))
+  taxi/*driver*)
+
+(defn system-fixture [t]
+  (let [system (component/start (test-application))]
+    (try
+      (t)
+      (finally
+        (db/destroy (:db system))
+        (component/stop system)))))
+
+(defonce ^:dynamic *test-root-url* "http://example.com")
+
+(defn path->url [path]
+  {:pre [path]}
+  (str (url *test-root-url* path)))
+
+(defn integration-test-fixture [t]
+  (setup-browser-session!)
+  (let [system (component/start (test-application))]
+    (try
+      (binding [*test-root-url* (local-root-url (:port (:app system)))]
+        (t))
+      (finally
+        (db/destroy (:db system))
+        (component/stop system)))))

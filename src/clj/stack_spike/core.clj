@@ -1,7 +1,6 @@
 (ns stack-spike.core
   (:require [com.stuartsierra.component :as component]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
-            [bidi.bidi :refer (make-handler)]
             [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
             (stack-spike.external

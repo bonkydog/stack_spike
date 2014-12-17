@@ -5,11 +5,11 @@
 
 (def path "ships/new")
 
-(defn visit [sys]
-  (browser/visit sys path))
+(defn visit []
+  (browser/visit path))
 
-(defn arrive [sys]
-  (browser/arrive sys path))
+(defn arrive []
+  (browser/arrive path))
 
 (defn create-test-ship []
   (quick-fill-submit {"#name" "Test Ship"}

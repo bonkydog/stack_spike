@@ -24,6 +24,7 @@
                   :exclusions [org.slf4j/slf4j-nop org.slf4j/log4j-over-slf4j]]
                  [org.slf4j/slf4j-log4j12 "1.7.2"]
                  [com.stuartsierra/component "0.2.2"]
+                 [com.cemerick/url "0.1.1"]
                  [ring-mock "0.1.5"]
                  [clj-webdriver "0.6.0"]]
   :main stack-spike.core

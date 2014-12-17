@@ -1,4 +1,5 @@
-(ns stack-spike.external.url)
+(ns stack-spike.external.url
+  (:require [cemerick.url :as u]))
 
 (import java.net.ServerSocket)
 
@@ -14,3 +15,10 @@
  "Determine the local host name."
  []
  (.getHostName (java.net.InetAddress/getLocalHost)))
+
+(defn local-root-url
+  "Determine root url."
+  [port]
+  (-> (u/url (str "http://" (local-host-name)))
+    (assoc :port port)
+    str))

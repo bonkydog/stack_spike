@@ -5,11 +5,10 @@
             [stack-spike.use-case.view-ship :refer [view-ship new-ship create-ship]]
             [stack-spike.external.database :refer [entity-gateway]]
             [stack-spike.interface.routes :as r]
-            [bidi.bidi :as b]
             [stack-spike.utility.debug :refer [dbg]]
             [clojure.tools.logging :refer [debug]]))
 
-(defresource ship [db]
+(defresource ship [db root-url]
   :available-media-types ["text/html"]
 
   :exists? (fn [ctx]
@@ -24,7 +23,7 @@
   :handle-ok (fn [ctx]
                (ship-presenter/present-ship-show (::ship ctx))))
 
-(defresource ship-list [db]
+(defresource ship-list [db root-url]
   :available-media-types ["text/html"]
   :allowed-methods [:post :get]
   :handle-ok (fn [req]
@@ -33,6 +32,4 @@
   :post! (fn [ctx]
            (let [params (get-in ctx [:request :params])]
              {::id (create-ship (entity-gateway db) params)}))
-  :post-redirect? (fn [ctx] {:location (b/path-for r/routes :ships)}))
-
-;; this needs to be a url.  TODO: centralize path and url generation.  but where?
+  :post-redirect? (fn [ctx] {:location (r/url-for root-url :ships)}))

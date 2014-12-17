@@ -7,7 +7,8 @@
             [bidi.bidi :as b]
             [datomic.api :as d]
             [stack-spike.interface.routes :refer [routes]]
-            [stack-spike.interface.resources :refer [resources]]))
+            [stack-spike.interface.resources :refer [resources]]
+            [stack-spike.external.url :refer [local-root-url]]))
 
 (defrecord WebApplicationStackSpike [db host-name port handler]
 
@@ -25,7 +26,9 @@
   (make-handler [this]
     (->  (b/make-handler
           stack-spike.interface.routes/routes
-          (stack-spike.interface.resources/resources (:db this)))
+          (stack-spike.interface.resources/resources
+           (:db this)
+           (str (local-root-url port))))
       wrap-params
       (wrap-trace :header :ui)
       wrap-stacktrace-web)))

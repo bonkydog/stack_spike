@@ -2,31 +2,17 @@
   (:require [clj-webdriver.taxi :refer :all]
             [clojure.string :as s]
             [clojure.test :refer :all]
-            [stack-spike.external.web-server :as web]))
+            [stack-spike.core-test :refer [path->url seconds-to-wait]]
+            [stack-spike.external.url :refer [local-root-url]]
+            [stack-spike.utility.debug :refer [dbg]]))
 
-(def browser :firefox)
-(def seconds-to-wait 500)
 
-(defn setup-browser-session! []
-  (try
-    (implicit-wait *driver* seconds-to-wait)
-    (catch Exception e
-      (set-driver! (new-driver {:browser browser}))))
-  *driver*)
 
-(defn browser-session-fixture [t]
-  (setup-browser-session!)
-  (t))
+(defn visit [path]
+  (to (dbg (path->url path))))
 
-;; TODO this doesn't belong here.
-(defn path->url [sys path]
-  (str (web/root-url (:web sys)) (s/replace-first path #"^/" "")))
-
-(defn visit [sys path]
-  (to  (path->url sys path)))
-
-(defn arrive [sys path]
-  (let [expected-url (path->url sys path)]
+(defn arrive [path]
+  (let [expected-url (path->url path)]
     (try
       (wait-until (fn [] (= expected-url (current-url)) ) seconds-to-wait)
       (catch org.openqa.selenium.TimeoutException e
