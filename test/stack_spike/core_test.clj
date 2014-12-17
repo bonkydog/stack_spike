@@ -3,7 +3,7 @@
             [clojure.test]
             [stack-spike.external.database :as db]
             [stack-spike.core :refer :all]
-            [stack-spike.external.url :refer [unused-port]]))
+            [stack-spike.external.url :refer [local-host-name unused-port]]))
 
 (defn test-db-uri []
   (str "datomic:mem://stack-spike-test-" (.getId (Thread/currentThread))))
@@ -18,7 +18,7 @@
   ;; -- but then we have to ask it what it is, which introduces circular
   ;; dependencies between components. :-/ This is probably good enough
   ;; for now.)
-  (application (unused-port) (test-db-uri)))
+  (application (local-host-name) (unused-port) (test-db-uri)))
 
 (defmacro defsystest
   "Define a test wrapped in a test system setup/teardown.  The system's

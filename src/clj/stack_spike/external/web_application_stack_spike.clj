@@ -9,7 +9,7 @@
             [stack-spike.interface.routes :refer [routes]]
             [stack-spike.interface.resources :refer [resources]]))
 
-(defrecord WebApplicationStackSpike [db handler]
+(defrecord WebApplicationStackSpike [db host-name port handler]
 
   component/Lifecycle
 
@@ -31,5 +31,5 @@
       wrap-stacktrace-web)))
 
 
-(defn new-web-application-stack-spike []
-  (map->WebApplicationStackSpike {}))
+(defn new-web-application-stack-spike [host-name port]
+  (map->WebApplicationStackSpike {:host-name host-name, :port port}))

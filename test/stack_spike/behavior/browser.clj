@@ -18,6 +18,7 @@
   (setup-browser-session!)
   (t))
 
+;; TODO this doesn't belong here.
 (defn path->url [sys path]
   (str (web/root-url (:web sys)) (s/replace-first path #"^/" "")))
 

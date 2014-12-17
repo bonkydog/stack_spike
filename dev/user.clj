@@ -10,14 +10,15 @@
             [clojure.pprint :refer :all]
             [clojure.tools.logging :as log]
             [stack-spike.external.database :refer [entity-gateway]]
-            [stack-spike.use-case.entity-gateway :as eg]))
+            [stack-spike.use-case.entity-gateway :as eg]
+            [stack-spike.external.url :refer [local-host-name]]))
 
 
 (defonce system nil)
 
 (defn init []
   (alter-var-root #'system
-                  (constantly (application (env :http-port) (env :datomic-uri) ))))
+                  (constantly (application (local-host-name) (env :http-port) (env :datomic-uri) ))))
 
 (defn start []
   (alter-var-root #'system component/start))
