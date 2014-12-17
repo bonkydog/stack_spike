@@ -2,20 +2,11 @@
   (:require [com.stuartsierra.component :as component]
             [clojure.test]
             [stack-spike.external.database :as db]
-            [stack-spike.core :refer :all]))
-
-(import java.net.ServerSocket)
+            [stack-spike.core :refer :all]
+            [stack-spike.external.url :refer [unused-port]]))
 
 (defn test-db-uri []
   (str "datomic:mem://stack-spike-test-" (.getId (Thread/currentThread))))
-
-(defn pick-unused-port
-  "Pick an unused TCP port."
-  []
-  (let [socket (ServerSocket. 0)
-        port (.getLocalPort socket)]
-    (.close socket)
-    port))
 
 (defn test-application []
   ;; There is a race condition here -- it's *possible* (though
@@ -27,7 +18,7 @@
   ;; -- but then we have to ask it what it is, which introduces circular
   ;; dependencies between components. :-/ This is probably good enough
   ;; for now.)
-  (application (pick-unused-port) (test-db-uri)))
+  (application (unused-port) (test-db-uri)))
 
 (defmacro defsystest
   "Define a test wrapped in a test system setup/teardown.  The system's
