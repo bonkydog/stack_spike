@@ -3,9 +3,10 @@
             [com.stuartsierra.component :as component]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.session :refer [wrap-session]]
+            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [liberator.dev :refer [wrap-trace]]
             [bidi.bidi :as b]
-            [datomic.api :as d]
             [stack-spike.interface.routes :refer [routes]]
             [stack-spike.interface.resources :refer [resources]]
             [stack-spike.external.url :refer [local-root-url]]))
@@ -29,7 +30,9 @@
           (stack-spike.interface.resources/resources
            (:db this)
            (str (local-root-url port))))
+      wrap-anti-forgery
       wrap-params
+      wrap-session
       (wrap-trace :header :ui)
       wrap-stacktrace-web)))
 
