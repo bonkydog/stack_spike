@@ -29,8 +29,8 @@
 
   (store-entity [this entity]
     (let [tx-data (map->tx-data entity)
-          result @(d/transact (conn this) [(dbg tx-data)])]
-      (or (d/resolve-tempid (dbg (:db-after result)) (dbg (:tempids result)) (dbg (:db/id tx-data)))
+          result @(d/transact (conn this) [tx-data])]
+      (or (d/resolve-tempid (:db-after result) (:tempids result) (:db/id tx-data))
           (:db/id tx-data))))
 
   (retrieve-entities [this type]

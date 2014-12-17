@@ -7,7 +7,6 @@
 
 
 (defn show [ship]
-  (dbg ship)
   (html [:html
          [:body
           [:p (str "Hello, this is the ship page for " (:ship/name ship))]

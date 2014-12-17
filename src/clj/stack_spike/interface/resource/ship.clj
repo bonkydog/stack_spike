@@ -15,7 +15,6 @@
   :exists? (fn [ctx]
              (assoc ctx ::ship
                     (let [ship-id (get-in ctx [:request :params :id])]
-                      (dbg ship-id)
                       (if (= ship-id "new")
                         (new-ship)
                         (view-ship
@@ -23,7 +22,7 @@
                          (Long/parseLong ship-id))))))
 
   :handle-ok (fn [ctx]
-               (dbg (ship-presenter/present-ship-show (::ship ctx)))))
+               (ship-presenter/present-ship-show (::ship ctx))))
 
 (defresource ship-list [db]
   :available-media-types ["text/html"]
