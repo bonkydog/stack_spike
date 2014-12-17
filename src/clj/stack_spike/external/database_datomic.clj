@@ -2,6 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [datomic.api :as d :refer [db q]]
             [stack-spike.external.database :as database]
+            [stack-spike.external.entity-gateway-datomic :as gateway]
             [stack-spike.utility.debug :refer [dbg]]
             [stack-spike.external.entity-gateway-datomic :refer [new-entity-gateway-datomic]]))
 
@@ -17,6 +18,7 @@
 
   (start [component]
     (d/create-database uri)
+    (database/load-schema component gateway/schema)
     (assoc component :uri uri))
 
   (stop [component]

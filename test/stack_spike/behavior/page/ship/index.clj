@@ -12,7 +12,7 @@
   (browser/arrive sys path))
 
 (defn assert-no-ships-listed []
-  (is (exists? "a.ship")))
+  (is (not (exists? "a.ship"))))
 
 (defn assert-test-ship-listed []
   (is  (find-element {:css "a.ship" :text "Test Ship"})))

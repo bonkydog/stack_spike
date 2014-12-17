@@ -12,4 +12,5 @@
   (browser/arrive sys path))
 
 (defn create-test-ship []
-  (quick-fill-submit {"#name" "Test Ship"}))
+  (quick-fill-submit {"#name" "Test Ship"}
+                     {"input[type='submit']" click}))

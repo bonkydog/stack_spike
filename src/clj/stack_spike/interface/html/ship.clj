@@ -11,7 +11,7 @@
   (html [:html
          [:body
           [:p (str "Hello, this is the ship page for " (:ship/name ship))]
-          (form-to [:put (:path ship)]
+          (form-to [:post (:collection-path ship)]
                    (label "name" "Name")
                    (text-field "name" (:ship/name ship))
                    (submit-button "Update Ship"))]]))
@@ -28,6 +28,6 @@
        [:tbody
         (map (fn [ship]
                [:tr
-                [:td (link-to (:path ship) (:db/id ship))]
+                [:td (link-to {:class "ship"} (:path ship) (:db/id ship))]
                 [:td (:ship/name ship)]])
              ships)]]]]]))

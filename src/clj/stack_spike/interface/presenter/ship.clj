@@ -7,12 +7,17 @@
 (defn ship-path [ship]
   (b/path-for r/routes :ship :id (or (:db/id ship) "new")))
 
-(defn assoc-ship-path [ship]
-  (assoc ship :path (ship-path ship)))
+(defn ships-path []
+  (b/path-for r/routes :ships))
+
+(defn assoc-paths [ship]
+  (assoc ship
+         :path (ship-path ship)
+         :collection-path (ships-path)))
 
 (defn present-ship-index [ships]
-  (let [view (map assoc-ship-path ships)]
+  (let [view (map assoc-paths ships)]
     (html/index view)))
 
 (defn present-ship-show [ship]
-  (html/show (assoc-ship-path ship)))
+  (html/show (assoc-paths ship)))

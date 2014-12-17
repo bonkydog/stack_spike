@@ -2,6 +2,7 @@
   (:require [stack-spike.external.web-application :as web-application]
             [com.stuartsierra.component :as component]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
+            [ring.middleware.params :refer [wrap-params]]
             [liberator.dev :refer [wrap-trace]]
             [bidi.bidi :as b]
             [datomic.api :as d]
@@ -25,6 +26,7 @@
     (->  (b/make-handler
           stack-spike.interface.routes/routes
           (stack-spike.interface.resources/resources (:db this)))
+      wrap-params
       (wrap-trace :header :ui)
       wrap-stacktrace-web)))
 
