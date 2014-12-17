@@ -30,8 +30,11 @@
       (wait-until (fn [] (= expected-url (current-url)) ) seconds-to-wait)
       (catch org.openqa.selenium.TimeoutException e
         (let [actual-url (current-url)]
-          ;; we assert instead of calling "is" here, because if we're on the wrong page we may as well quit.
-          (assert (= expected-url actual-url) (str "Expected to arrive at " expected-url ".  After waiting, current url was still " actual-url)))))))
+          ;; we assert instead of calling "is" here, because if we're on
+          ;; the wrong page we may as well quit.
+          (assert (= expected-url actual-url)
+                  (str "Expected to arrive at " expected-url ".  "
+                       "After waiting, current url was still " actual-url)))))))
 
 (defn assert-text-present [expected-content]
   (let [actual-content (text (find-element  {:css "body"}))]
