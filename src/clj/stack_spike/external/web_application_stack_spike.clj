@@ -9,7 +9,7 @@
             [stack-spike.interface.routes :refer [routes]]
             [stack-spike.interface.resources :refer [resources]]))
 
-(defrecord WebApplicationStackSpike [db handler resources]
+(defrecord WebApplicationStackSpike [db handler]
 
   component/Lifecycle
 
