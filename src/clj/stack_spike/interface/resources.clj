@@ -1,5 +1,7 @@
 (ns stack-spike.interface.resources
-  (:require (stack-spike.interface.resource
+  (:require [bidi.ring :as r]
+            [stack-spike.utility.debug :refer [dbg]]
+            (stack-spike.interface.resource
              [ship :as ship]
              [home :as home])))
 

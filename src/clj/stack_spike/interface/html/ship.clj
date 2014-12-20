@@ -1,7 +1,7 @@
 (ns stack-spike.interface.html.ship
   (:require [stack-spike.interface.routes :as r]
             [hiccup.core :refer [html]]
-            [hiccup.element :refer [link-to]]
+            [hiccup.element :refer [link-to javascript-tag]]
             [hiccup.form :refer :all]
             [ring.util.anti-forgery :refer [anti-forgery-field]]
             [stack-spike.utility.debug :refer [dbg]]))
@@ -37,4 +37,9 @@
                 [:td.controls
                  [:a.delete {:href "#"} "[delete]"]]])
              ships)]]]
-     [:a.new-ship {:href (r/path-for :ship :id "new")} "New Ship"]]]))
+     [:a.new-ship {:href (r/path-for :ship :id "new")} "New Ship"]
+     [:script {:type "text/javascript" :src "js/out/goog/base.js"}]
+     [:script {:type "text/javascript" :src "js/main.js"}]
+     (javascript-tag "goog.require('stack_spike.core');")
+
+     ]]))

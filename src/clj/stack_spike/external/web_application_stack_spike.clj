@@ -38,9 +38,11 @@
   (make-handler [this]
     (->  (b/make-handler
           stack-spike.interface.routes/routes
-          (stack-spike.interface.resources/resources
-           (:db this)
-           (str (local-root-url port))))
+          (fn [r] (get (stack-spike.interface.resources/resources
+                        (:db this)
+                        (str (local-root-url port)))
+                       r
+                       r)))
       wrap-anti-forgery
       wrap-form-method
       wrap-params
