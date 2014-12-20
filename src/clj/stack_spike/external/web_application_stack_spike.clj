@@ -6,7 +6,7 @@
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [liberator.dev :refer [wrap-trace]]
-            [bidi.bidi :as b]
+            [bidi.ring :as b]
             [stack-spike.interface.routes :refer [routes]]
             [stack-spike.interface.resources :refer [resources]]
             [stack-spike.external.url :refer [local-root-url]]
@@ -20,7 +20,7 @@
 
 (defn wrap-form-method [handler]
   (fn [request]
-    (handler (dbg (form-method request)))))
+    (handler (form-method request))))
 
 (defrecord WebApplicationStackSpike [db host-name port handler]
 
