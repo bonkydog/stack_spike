@@ -9,7 +9,7 @@
 
 
 (defn visit [path]
-  (to (dbg (path->url path))))
+  (to (path->url path)))
 
 (defn arrive [path]
   (let [expected-url (path->url path)]

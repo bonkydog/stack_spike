@@ -15,11 +15,14 @@
 
 (defn map->tx-data [m]
   (let [type "ship"
-        model (clojure.walk/keywordize-keys m)]
+        model (clojure.walk/keywordize-keys m)
+        id (if (string? (:id model))
+             (Long/parseLong (:id model))
+             (:id model))]
     (assoc
      (into {} (map (fn [[k v]] [(keyword "ship" (name k)) v]) (dissoc model :id)))
      :db/id
-     (or (:id model) #db/id[:db.part/user]))))
+     (or id #db/id[:db.part/user]))))
 
 (defrecord EntityGatewayDatomic [db]
   eg/EntityGateway

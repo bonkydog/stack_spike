@@ -19,4 +19,6 @@
 (defn -main
   "Run the application."
   [& args]
-  (component/start (application (local-host-name) (env :http-port) (env :datomic-uri))))
+  (component/start (application (local-host-name)
+                                (env :http-port)
+                                (env :datomic-uri))))

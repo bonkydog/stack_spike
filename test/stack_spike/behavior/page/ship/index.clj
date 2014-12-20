@@ -11,8 +11,26 @@
 (defn arrive []
   (browser/arrive path))
 
+(defn id-of-first-ship []
+  (Long/parseLong (text (element ".ship .id"))))
+
+(defn new-ship []
+  (click "a.new-ship"))
+
+(defn edit-ship [ship-id]
+  (click (str "#ship-" ship-id " a.edit")))
+
 (defn assert-no-ships-listed []
-  (is (not (exists? "a.ship"))))
+  (is (not (exists? "td.ship"))))
 
 (defn assert-test-ship-listed []
-  (is  (find-element {:css "a.ship" :text "Test Ship"})))
+  (is (find-element {:css "tr.ship .name" :text "Test Ship"})))
+
+(defn assert-exactly-one-ship-listed []
+  (is (= 1 (count (find-elements {:css "tr.ship"})))))
+
+(defn assert-test-ship-changed []
+  (is (find-element {:css "tr.ship .name" :text "Different Name"})))
+
+(defn delete-ship [ship-id]
+  (click (str "#ship-" ship-id " a.delete")))

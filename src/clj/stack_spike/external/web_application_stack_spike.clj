@@ -9,7 +9,18 @@
             [bidi.bidi :as b]
             [stack-spike.interface.routes :refer [routes]]
             [stack-spike.interface.resources :refer [resources]]
-            [stack-spike.external.url :refer [local-root-url]]))
+            [stack-spike.external.url :refer [local-root-url]]
+            [clojure.string :as str]
+            [stack-spike.utility.debug :refer [dbg]]))
+
+(defn form-method [request]
+  (if-let [fm (get-in request [:form-params "_method"])]
+    (assoc request :request-method (keyword (str/lower-case fm)))
+    request))
+
+(defn wrap-form-method [handler]
+  (fn [request]
+    (handler (dbg (form-method request)))))
 
 (defrecord WebApplicationStackSpike [db host-name port handler]
 
@@ -31,6 +42,7 @@
            (:db this)
            (str (local-root-url port))))
       wrap-anti-forgery
+      wrap-form-method
       wrap-params
       wrap-session
       (wrap-trace :header :ui)
