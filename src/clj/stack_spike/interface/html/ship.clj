@@ -4,6 +4,7 @@
             [hiccup.element :refer [link-to javascript-tag]]
             [hiccup.form :refer :all]
             [ring.util.anti-forgery :refer [anti-forgery-field]]
+            [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]
             [stack-spike.utility.debug :refer [dbg]]))
 
 
@@ -22,6 +23,8 @@
 (defn index [ships]
   (html
    [:html
+    [:head
+     [:meta {:name "csrf-token" :content *anti-forgery-token*}]]
     [:body
      [:table.ships
       [:thead
@@ -35,7 +38,7 @@
                 [:td.id (link-to {:class "edit"} (:path ship) (:db/id ship))]
                 [:td.name (:ship/name ship)]
                 [:td.controls
-                 [:a.delete {:href "#"} "[delete]"]]])
+                 [:a.delete {:href "#" :data-action (:path ship) :data-method "delete"} "[delete]"]]])
              ships)]]]
      [:a.new-ship {:href (r/path-for :ship :id "new")} "New Ship"]
      [:script {:type "text/javascript" :src "js/out/goog/base.js"}]

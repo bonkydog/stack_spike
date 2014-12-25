@@ -14,3 +14,6 @@
 
 (defn update-ship [entity-gateway params]
   (eg/store-entity entity-gateway (map->Spaceship (select-keys (keywordize-keys params) [:id :name]))))
+
+(defn delete-ship [entity-gateway id]
+  (eg/delete-entity entity-gateway id))

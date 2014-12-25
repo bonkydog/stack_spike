@@ -23,5 +23,6 @@
     (ship.index/arrive)
     (ship.index/assert-test-ship-changed)
     (ship.index/assert-exactly-one-ship-listed)
-    #_(ship.index/delete-ship ship-id)
-    #_(ship.index/assert-no-ships-listed)))
+    (ship.index/delete-ship ship-id)
+    (ship.index/arrive)
+    (ship.index/assert-no-ships-listed)))

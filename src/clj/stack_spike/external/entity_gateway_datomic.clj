@@ -10,15 +10,18 @@
 (defn- dbv [this]
   (db (conn this)))
 
+(defn- normalize-id [id]
+  (if (string? id)
+    (Long/parseLong id)
+    id))
+
 (defn entity->map [e]
   (assoc  (into {} (d/touch e)) :db/id (:db/id e)))
 
 (defn map->tx-data [m]
   (let [type "ship"
         model (clojure.walk/keywordize-keys m)
-        id (if (string? (:id model))
-             (Long/parseLong (:id model))
-             (:id model))]
+        id (normalize-id (:id model))]
     (assoc
      (into {} (map (fn [[k v]] [(keyword "ship" (name k)) v]) (dissoc model :id)))
      :db/id
@@ -44,7 +47,9 @@
            (map first)
            sort
            (map #(d/entity (dbv this) %))
-           (map entity->map)))))
+           (map entity->map))))
+  (delete-entity [this id]
+    @(d/transact (conn this) [[:db.fn/retractEntity (normalize-id id)]])))
 
 (defn new-entity-gateway-datomic [db]
   (map->EntityGatewayDatomic {:db db}))
