@@ -26,6 +26,8 @@
 
 (def seconds-to-wait 500)
 
+(def ^:dynamic *test-om-interface* false)
+
 (defn setup-browser-session! []
   (try
     (taxi/implicit-wait taxi/*driver* seconds-to-wait)

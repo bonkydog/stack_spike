@@ -8,7 +8,7 @@
 
 (use-fixtures :once integration-test-fixture)
 
-(deftest ship-crud-test
+(defn ship-crud-test []
   (ship.index/visit)
   (ship.index/assert-no-ships-listed)
   (ship.index/new-ship)
@@ -26,3 +26,10 @@
     (ship.index/delete-ship ship-id)
     (ship.index/arrive)
     (ship.index/assert-no-ships-listed)))
+
+(deftest ship-html-crud-test
+  (ship-crud-test))
+
+(deftest ship-om-crud-test
+  (binding [*test-om-interface* true]
+    (ship-crud-test)))

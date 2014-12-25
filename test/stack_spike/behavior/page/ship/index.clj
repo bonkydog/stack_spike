@@ -1,15 +1,17 @@
 (ns stack-spike.behavior.page.ship.index
   (:require [clojure.test :refer :all]
             [stack-spike.behavior.browser :as browser]
+            [stack-spike.core-test :refer [*test-om-interface*]]
             [clj-webdriver.taxi :refer :all]))
 
-(def path "/ships")
+(defn path []
+  (str (if *test-om-interface* "#" "" ) "/ships"))
 
 (defn visit []
-  (browser/visit path))
+  (browser/visit (path)))
 
 (defn arrive []
-  (browser/arrive path))
+  (browser/arrive (path)))
 
 (defn id-of-first-ship []
   (Long/parseLong (text (element ".ship .id"))))

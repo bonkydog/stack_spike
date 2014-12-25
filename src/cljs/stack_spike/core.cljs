@@ -29,5 +29,4 @@
 
 (let [fragment (dom/htmlToDocumentFragment "<h1>Hi!</h1>")
       body (aget (.getElementsByTagName js/document "body") 0)]
-  (dom/insertChildAt body fragment 0)
   (e/listen body (. e/EventType -CLICK) handle-delete))
