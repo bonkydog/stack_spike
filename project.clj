@@ -12,7 +12,7 @@
                  [log4j "1.2.17"]
                  [org.clojure/tools.logging "0.3.1"]
                  [environ "1.0.0"]
-                 [om "0.8.0-beta3"]
+                 [om "0.8.0-rc1"]
                  [om-sync "0.1.1"]
                  [ring/ring "1.3.2"]
                  [ring/ring-anti-forgery "1.0.0"]
