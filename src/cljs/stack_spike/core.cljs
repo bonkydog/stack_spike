@@ -1,11 +1,7 @@
 (ns stack-spike.core
   (:require [goog.dom :as dom]
-            [goog.events :as e]))
-
-
-(defn log [x]
-  (.log js/console x)
-  x)
+            [goog.events :as e]
+            [stack-spike.tools :refer [log]]))
 
 (defn csrf-token[]
   (if-let [meta-tag (.querySelector js/document "html > head > meta[name='csrf-token']")]

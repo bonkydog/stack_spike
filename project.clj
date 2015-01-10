@@ -39,7 +39,8 @@
   :profiles {:uberjar {:aot :all}
              :dev [:dev-env {:plugins [[com.cemerick/austin "0.1.6"]]
                              :source-paths ["dev"]
-                             :dependencies [[org.clojure/tools.namespace "0.2.8"]
+                             :dependencies [[weasel "0.4.2"]
+                                            [org.clojure/tools.namespace "0.2.8"]
                                             [org.clojure/java.classpath "0.2.2"]
                                             [rmarianski/tidy-up "0.0.2"]]}]
              :test [:test-env]}
@@ -49,6 +50,7 @@
                                    :output-dir "resources/public/js/out"
                                    :optimizations :none
                                    :source-map true}
-                        :notify-command ["bash" "bin/notify-about-cljs-error.bash"]}]}
+                        ;; :notify-command ["bash" "bin/notify-about-cljs-error.bash"]
+                        }]}
 
   :repl-options {:init-ns user})
