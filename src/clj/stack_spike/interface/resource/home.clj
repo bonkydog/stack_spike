@@ -1,8 +1,7 @@
 (ns stack-spike.interface.resource.home
-  (:require [liberator.core :refer [defresource]]))
+  (:require [liberator.core :refer [defresource]]
+            [stack-spike.interface.html.home :as html]))
 
 (defresource home [db _]
-  :available-media-types ["text/plain"]
-  :handle-ok (fn [ctx]
-               (str "Hello, world! Here is my database uri: "
-                    (:uri db))))
+  :available-media-types ["text/html"]
+  :handle-ok html/home)

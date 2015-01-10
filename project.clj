@@ -7,7 +7,7 @@
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2411"]
+                 [org.clojure/clojurescript "0.0-2657"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [log4j "1.2.17"]
                  [org.clojure/tools.logging "0.3.1"]
@@ -47,5 +47,7 @@
                         :compiler {:output-to "resources/public/js/main.js"
                                    :output-dir "resources/public/js/out"
                                    :optimizations :none
-                                   :source-map true}}]}
+                                   :source-map true}
+                        :notify-command ["bash" "bin/notify-about-cljs-error.bash"]}]}
+
   :repl-options {:init-ns user})
