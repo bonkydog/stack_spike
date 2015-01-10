@@ -13,3 +13,5 @@ pom.xml.asc
 *.iml
 profiles.clj
 log/stack_spike.log
+.repl/
+out/
