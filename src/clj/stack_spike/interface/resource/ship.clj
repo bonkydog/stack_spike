@@ -36,11 +36,16 @@
                                        :body    ""})))
 
 (defresource ship-list [db root-url]
-  :available-media-types ["text/html"]
+  :available-media-types ["text/html", "application/transit+json"]
   :allowed-methods [:get :post]
   :handle-ok (fn [req]
-               (ship-presenter/present-ship-index
-                (list-ships (entity-gateway db))))
+               (let [media-type (get-in req [:representation :media-type])]
+                 (condp = media-type
+                   "text/html" (ship-presenter/present-ship-index
+                                (list-ships (entity-gateway db)))
+                   "application/transit+json" (list-ships (entity-gateway db))
+                   (str "bad media type:" media-type))))
+
   :post! (fn [ctx]
            (let [params (get-in ctx [:request :params])]
              {::id (create-ship (entity-gateway db) params)}))

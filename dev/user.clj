@@ -11,7 +11,9 @@
             [clojure.tools.logging :as log]
             [stack-spike.external.database :refer [entity-gateway]]
             [stack-spike.use-case.entity-gateway :as eg]
-            [stack-spike.external.url :refer [local-host-name]]))
+            [stack-spike.external.url :refer [local-host-name]]
+            [cemerick.austin.repls]
+            [cemerick.austin]))
 
 
 (defonce system nil)
@@ -54,3 +56,8 @@
 (defn eg []
   "Get an entity gateway for the current system."
   (entity-gateway (:db system)))
+
+(def repl-env (reset! cemerick.austin.repls/browser-repl-env
+                      (cemerick.austin/repl-env)))
+(defn brepl []
+  (cemerick.austin.repls/cljs-repl repl-env))

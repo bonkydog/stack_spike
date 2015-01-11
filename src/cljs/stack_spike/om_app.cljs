@@ -1,6 +1,7 @@
 (ns stack-spike.om-app
   (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]))
+            [om.dom :as dom :include-macros true]
+            [clojure.browser.repl]))
 
 
 (def app-state
@@ -27,5 +28,5 @@
     (render [this]
       (dom/h1 nil (:text data)))))
 
-(om/root widget {:text "Hello world!"}
+(om/root widget {:text "Hello Steve Austin"}
          {:target (. js/document (getElementById "root"))})

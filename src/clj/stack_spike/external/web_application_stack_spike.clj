@@ -11,6 +11,7 @@
             [stack-spike.interface.resources :refer [resources]]
             [stack-spike.external.url :refer [local-root-url]]
             [clojure.string :as str]
+            [io.clojure.liberator-transit]
             [stack-spike.utility.debug :refer [dbg]]))
 
 (defn form-method [request]
