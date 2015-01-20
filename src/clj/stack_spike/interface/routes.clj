@@ -1,7 +1,6 @@
 (ns stack-spike.interface.routes
   (:require [bidi.bidi :as b]
             [bidi.ring :as r]
-            [bidi.server :as s]
             [cemerick.url :as u]))
 
 (import java.net.URL)
@@ -10,7 +9,7 @@
   ["/" {"" :home
         "ships" :ships
         ["ships/" :id] :ship
-        "js" (s/resources-maybe {:prefix "public/js/"})}])
+        "js" (r/resources-maybe {:prefix "public/js/"})}])
 
 (defn path-for [route & params]
   (apply b/path-for routes route params))

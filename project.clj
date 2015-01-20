@@ -6,7 +6,7 @@
 
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
 
-  :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
+  :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2665"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [log4j "1.2.17"]
@@ -16,9 +16,11 @@
                  [om-sync "0.1.1"]
                  [ring/ring "1.3.2"]
                  [ring/ring-anti-forgery "1.0.0"]
+                 [com.fasterxml.jackson.core/jackson-annotations "2.5.0" :packaging "bundle"]
                  [io.clojure/liberator-transit "0.3.0"]
+                 [com.cognitect/transit-clj "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.199"]
-                 [bidi "1.14.0"]
+                 [bidi "1.15.0" :exclusions [org.clojure/clojure]]
                  [liberator "0.12.3-SNAPSHOT"]
                  [hiccup "1.0.5"]
                  [com.datomic/datomic-pro "0.9.5078"
@@ -27,11 +29,12 @@
                  [com.stuartsierra/component "0.2.2"]
                  [com.cemerick/url "0.1.1"]
                  [ring-mock "0.1.5"]
-                 [clj-webdriver "0.6.1"]]
+                 [clj-webdriver "0.6.1"]
+                 [cljs-http "0.1.24"]]
   :main stack-spike.core
   :Target-path "target/%s"
 
-  :plugins [[lein-cljsbuild "1.0.3"]
+  :plugins [[lein-cljsbuild "1.0.4"]
             [lein-environ "1.0.0"]]
 
   :source-paths ["src/clj" "src/cljs"]
