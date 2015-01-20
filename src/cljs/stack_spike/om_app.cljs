@@ -16,31 +16,28 @@
 (defn ship-row [ship]
   (om/component
    (dom/tr {:id (str "ship-" (:id ship)) :className "ship"}
-           (dom/td {:id "id"}
-                   (dom/a {:href (str "/ship/" (:db/id ship)) :className "edit"}
+           (dom/td #js{:id "id"}
+                   (dom/a #js{:href (str "#/ships/" (:db/id ship)) :className "edit"}
                           (:db/id ship)))
-           (dom/td {:className "id"}
+           (dom/td #js{:className "id"}
                    (:ship/name ship)))))
 
 (defn ships-index [app owner]
   (reify
     om/IRender
     (render [this]
-      (dom/table {:className "ships"}
-                 (apply dom/tbody nil
-                        (om/build-all ship-row (:ships app)))))
+      (dom/text nil
+       (dom/table #js{:className "ships"}
+                  (apply dom/tbody nil
+                         (om/build-all ship-row (:ships app))))
+       (dom/a #js{:className "new-ship" :href "#/ships/new"} "New Ship")))
     om/IWillMount
     (will-mount [this]
       (fetch-ships app))))
 
 (defn fetch-ships [app]
   (go (let [response (<! (http/get "/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
-        (prn (:status response))
-        (prn (:body response))
-        (prn app)
-        (om/update! app :ships (vec (:body response)))
-        (prn @app)
-        )))
+        (om/update! app :ships (vec (:body response))))))
 
 (om/root ships-index
          app-state
