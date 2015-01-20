@@ -11,19 +11,20 @@
 (enable-console-print!)
 
 (def routes
-  ["" {"" :home
-       "#/ships" :ships
-       ["#/ships/" :id] :ship}])
+  ["/om" {"/ships" :ships
+          ["/ships/" :id] :ship}])
 
 
-(defn fragment []
-  (.-hash (.-location js/document)))
+(defn current-url []
+  (.-href (.-location js/window)))
 
-(defn resolve [fragment]
-  (:handler (bidi/match-route routes fragment)))
+(defn resolve [url]
+  (let [path (.-pathname (js/URL.  url))]
+    (log "path:" path)
+    (bidi/match-route routes path)))
 
 (def app-state
-  (atom {:page (resolve (fragment))
+  (atom {:page (resolve (current-url))
          :ships []}))
 
 (prn @app-state)
@@ -33,7 +34,7 @@
   (om/component
    (dom/tr {:id (str "ship-" (:id ship)) :className "ship"}
            (dom/td #js{:id "id"}
-                   (dom/a #js{:href (str "#/ships/" (:db/id ship))
+                   (dom/a #js{:href (str "/om/ships/" (:db/id ship))
                               :className "edit"
                               :onClick (fn [event]
                                          (.preventDefault event)
@@ -56,7 +57,7 @@
        (dom/table #js{:className "ships"}
                   (apply dom/tbody nil
                          (om/build-all ship-row (:ships app))))
-       (dom/a #js{:className "new-ship" :href "#/ships/new"} "New Ship")))
+       (dom/a #js{:className "new-ship" :href "/om/ships/new"} "New Ship")))
     om/IWillMount
     (will-mount [this]
       (fetch-ships app))))
@@ -66,14 +67,13 @@
   (reify
     om/IRender
     (render [this]
-      (let [page-component (page-components (:page app))]
+      (let [page-component (page-components (get-in app [:page :handler]))]
         (if page-component
           (om/build page-component app)
-          (dom/div nil "Error!" (:page app)))))))
+          (dom/div nil "Error!" (str (:page app))))))))
 
 (def page-components
-  {:home ships
-   :ships ships
+  {:ships ships
    :ship ship})
 
 
@@ -82,19 +82,24 @@
         (om/update! app :ships (vec (:body response))))))
 
 (defn set-page [url]
-  (let [fragment (.-hash (js/URL. url))]
-    (om/update! (om/root-cursor app-state) :page (resolve fragment))))
+  (om/update! (om/root-cursor app-state) :page (resolve url)))
 
 (defn goto [url]
   (.pushState js/history {} nil url )
   (set-page url))
 
 (let [nav-chan (chan)]
-  (go-loop [url (<! nav-chan)]
-    (goto url))
+  (go-loop []
+      (let [url (<! nav-chan)]
+        (log "nav-chan: " url)
+        (goto url)
+        (log "nav-chan complete!"))
+    (recur))
+
+  (log "GOT HERE")
   (set! (.-onpopstate js/window) (fn []
                                    (log "pop!")
-                                   (set-page (.-href (.-location js/window)))))
+                                   (set-page (current-url))))
   (om/root page
            app-state
            {:target (. js/document (getElementById "root"))

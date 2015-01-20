@@ -1,5 +1,5 @@
 (ns stack-spike.tools)
 
-(defn log [x]
-  (.log js/console x)
+(defn log [& x]
+  (js/console.log (clj->js x))
   x)

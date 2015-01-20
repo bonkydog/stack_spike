@@ -9,6 +9,7 @@
   ["/" {"" :home
         "ships" :ships
         ["ships/" :id] :ship
+        ["om/" #".*"] :om
         "js" (r/resources-maybe {:prefix "public/js/"})}])
 
 (defn path-for [route & params]

@@ -2,6 +2,10 @@
   (:require [liberator.core :refer [defresource]]
             [stack-spike.interface.html.home :as html]))
 
-(defresource home [db _]
+(defresource om [_ _]
+  :available-media-types ["text/html"]
+  :handle-ok html/om)
+
+(defresource home [_ _]
   :available-media-types ["text/html"]
   :handle-ok html/home)
