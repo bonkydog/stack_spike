@@ -47,7 +47,7 @@
   (reify
     om/IRender
     (render [this]
-      (dom/h1 nil "OHAI! I AM A SHIP!"))))
+      (dom/h1 nil "OHAI! I AM SHIP #" (get-in app [:page :route-params :id])  "!"))))
 
 (defn ships [app owner]
   (reify
@@ -58,9 +58,7 @@
                   (apply dom/tbody nil
                          (om/build-all ship-row (:ships app))))
        (dom/a #js{:className "new-ship" :href "/om/ships/new"} "New Ship")))
-    om/IWillMount
-    (will-mount [this]
-      (fetch-ships app))))
+    ))
 
 
 (defn page [app owner]
@@ -70,12 +68,14 @@
       (let [page-component (page-components (get-in app [:page :handler]))]
         (if page-component
           (om/build page-component app)
-          (dom/div nil "Error!" (str (:page app))))))))
+          (dom/div nil "Error!" (str (:page app))))))
+    om/IWillMount
+    (will-mount [this]
+      (fetch-ships app))))
 
 (def page-components
   {:ships ships
    :ship ship})
-
 
 (defn fetch-ships [app]
   (go (let [response (<! (http/get "/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
