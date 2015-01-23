@@ -42,7 +42,7 @@
              ships)]]]
      [:a.new-ship {:href (r/path-for :ship :id "new")} "New Ship"]
      [:script {:type "text/javascript" :src "js/out/goog/base.js"}]
-     [:script {:type "text/javascript" :src "js/main.js"}]
+     [:script {:type "text/javascript" :src "js/app.js"}]
      (javascript-tag "goog.require('stack_spike.core');")
 
      ]]))

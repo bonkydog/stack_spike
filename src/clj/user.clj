@@ -12,15 +12,27 @@
             [stack-spike.external.database :refer [entity-gateway]]
             [stack-spike.use-case.entity-gateway :as eg]
             [stack-spike.external.url :refer [local-host-name]]
-            [cemerick.austin.repls]
-            [cemerick.austin]))
 
+
+            [cemerick.piggieback :as piggieback]
+            [weasel.repl.websocket :as weasel]
+            [leiningen.core.main :as lein]))
+
+(def is-dev? (env :is-dev))
+
+(defn browser-repl []
+  (piggieback/cljs-repl :repl-env (weasel/repl-env :ip "0.0.0.0" :port 9001)))
+
+(defn start-figwheel []
+  (future
+    (print "Starting figwheel.\n")
+    (lein/-main ["figwheel"])))
 
 (defonce system nil)
 
 (defn init []
   (alter-var-root #'system
-                  (constantly (application (local-host-name) (env :http-port) (env :datomic-uri) ))))
+                  (constantly (application (local-host-name) 8080 "datomic:dev://localhost:4334/stack-spike-dev" ))))
 
 (defn start []
   (alter-var-root #'system component/start))
@@ -56,8 +68,3 @@
 (defn eg []
   "Get an entity gateway for the current system."
   (entity-gateway (:db system)))
-
-(def repl-env (reset! cemerick.austin.repls/browser-repl-env
-                      (cemerick.austin/repl-env)))
-(defn brepl []
-  (cemerick.austin.repls/cljs-repl repl-env))

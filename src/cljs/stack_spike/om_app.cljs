@@ -6,9 +6,12 @@
             [cljs-http.client :as http]
             [bidi.bidi :as bidi]
             [clojure.browser.repl]
+            [weasel.repl :as weasel]
+            [figwheel.client :as figwheel :include-macros true]
             [stack-spike.tools :refer [log]]))
 
 (enable-console-print!)
+
 
 (def routes
   ["/om" {"/ships" :ships
@@ -88,19 +91,20 @@
   (.pushState js/history {} nil url )
   (set-page url))
 
-(let [nav-chan (chan)]
-  (go-loop []
+(defn main []
+  (let [nav-chan (chan)]
+    (go-loop []
       (let [url (<! nav-chan)]
         (log "nav-chan: " url)
         (goto url)
         (log "nav-chan complete!"))
-    (recur))
+      (recur))
 
-  (log "GOT HERE")
-  (set! (.-onpopstate js/window) (fn []
-                                   (log "pop!")
-                                   (set-page (current-url))))
-  (om/root page
-           app-state
-           {:target (. js/document (getElementById "root"))
-            :shared {:nav-chan nav-chan}}))
+    (log "GOT HERE")
+    (set! (.-onpopstate js/window) (fn []
+                                     (log "pop!")
+                                     (set-page (current-url))))
+    (om/root page
+             app-state
+             {:target (. js/document (getElementById "root"))
+              :shared {:nav-chan nav-chan}})))
