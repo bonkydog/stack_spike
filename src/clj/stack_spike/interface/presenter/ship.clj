@@ -15,7 +15,7 @@
          :collection-path (ships-path)))
 
 (defn present-ship-index [ships]
-  (let [view (map assoc-paths ships)]
+  (let [view (map assoc-paths (vals ships))]
     (html/index view)))
 
 (defn present-ship-show [ship]

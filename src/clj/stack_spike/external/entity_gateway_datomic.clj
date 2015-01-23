@@ -47,7 +47,9 @@
            (map first)
            sort
            (map #(d/entity (dbv this) %))
-           (map entity->map))))
+           (map entity->map)
+           (mapcat #(vector (:db/id %) %))
+           (apply sorted-map))))
   (delete-entity [this id]
     @(d/transact (conn this) [[:db.fn/retractEntity (normalize-id id)]])))
 

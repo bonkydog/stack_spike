@@ -8,7 +8,7 @@
     "Store entity in the database.")
 
   (retrieve-entities [this type]
-    "Retrieve all entities of the requested type.")
+    "Retrieve a map of all entities of the requested type, keyed by id.")
 
   (delete-entity [this id]
     "Deletes the entity with the requested id"))
