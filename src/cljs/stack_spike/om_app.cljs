@@ -12,7 +12,6 @@
 
 (enable-console-print!)
 
-
 (def routes
   ["/om" {"/ships" :ships
           ["/ships/" :id] :ship}])
@@ -112,6 +111,12 @@
   (.pushState js/history {} nil url )
   (set-page url))
 
+(def csrf-token
+  (.-content (.getElementById js/document "csrf-token")))
+
+(defn de-namespace-keys [m]
+  (apply hash-map (mapcat (fn [[k v]] [(-> k name keyword) v]) m)))
+
 (defn main []
   (let [nav-chan (chan)
         update-chan (chan)]
@@ -121,8 +126,13 @@
                       (goto url)
                       (log "nav-chan complete!"))
             update-chan ([ship-update]
+                         (http/post (str "http://localhost:8080/ships/" (:db/id ship-update))
+                                    {:transit-params (de-namespace-keys  ship-update)
+                                     :headers {"Accept" "application/transit+json;verbose"
+                                               "X-HTTP-Method-Override" "PUT"
+                                               "X-CSRF-Token" csrf-token}})
                          (om/update! (om/root-cursor app-state) [:ships (:db/id ship-update)] ship-update)
-                         (.back js/history)))
+                         (goto "http://localhost:8080/om/ships")))
 
       (recur))
 

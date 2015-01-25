@@ -19,7 +19,7 @@
   (html
    [:html
     [:head
-     [:meta {:name "csrf-token" :content *anti-forgery-token*}]]
+     [:meta {:id "csrf-token" :name "csrf-token" :content *anti-forgery-token*}]]
     [:body
      [:div#root]
      [:script {:type "text/javascript" :src "/js/react.js"}]

@@ -28,6 +28,7 @@
                  [com.fasterxml.jackson.core/jackson-databind "2.5.0"]
                  [com.fasterxml.jackson.core/jackson-annotations "2.5.0"]
                  [io.clojure/liberator-transit "0.3.0"]
+                 [ring-transit "0.1.3"]
                  [com.cognitect/transit-clj "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.199"]
                  [bidi "1.15.0" :exclusions [org.clojure/clojure]]

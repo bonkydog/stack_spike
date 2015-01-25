@@ -9,8 +9,14 @@
             [stack-spike.utility.debug :refer [dbg]]
             [clojure.tools.logging :refer [debug]]))
 
+
+(defn content [request]
+  (condp = (:content-type request)
+    "application/transit+json" (:body request)
+    "application/x-www-form-urlencoded" (:params request)))
+
 (defresource ship [db root-url]
-  :available-media-types ["text/html"]
+  :available-media-types ["text/html", "application/transit+json"]
   :allowed-methods [:get :put :delete]
   :exists? (fn [ctx]
              (assoc ctx ::ship
@@ -21,7 +27,7 @@
                          (entity-gateway db)
                          (Long/parseLong ship-id))))))
   :put! (fn [ctx]
-          (let [params (get-in ctx [:request :params])]
+          (let [params (content (:request ctx))]
             {::id (update-ship (entity-gateway db) params)}))
   :delete! (fn [ctx]
              (let [id (get-in ctx [:request :params :id])]
@@ -47,7 +53,7 @@
                    (str "bad media type:" media-type))))
 
   :post! (fn [ctx]
-           (let [params (get-in ctx [:request :params])]
+           (let [params (content (:request ctx))]
              {::id (create-ship (entity-gateway db) params)}))
 
   :post-redirect? (fn [ctx] {:location (r/url-for root-url :ships)}))

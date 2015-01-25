@@ -12,10 +12,12 @@
             [stack-spike.external.url :refer [local-root-url]]
             [clojure.string :as str]
             [io.clojure.liberator-transit]
+            [ring.middleware.transit :refer [wrap-transit-body]]
             [stack-spike.utility.debug :refer [dbg]]))
 
 (defn form-method [request]
-  (if-let [fm (get-in request [:form-params "_method"])]
+  (if-let [fm (or (get-in request [:headers "x-http-method-override"])
+                  (get-in request [:form-params "_method"]))]
     (assoc request :request-method (keyword (str/lower-case fm)))
     request))
 
@@ -47,6 +49,7 @@
       wrap-anti-forgery
       wrap-form-method
       wrap-params
+      (wrap-transit-body {:keywords? true} )
       wrap-session
       (wrap-trace :header :ui)
       wrap-stacktrace-web)))
