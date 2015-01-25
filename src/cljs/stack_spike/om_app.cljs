@@ -1,7 +1,7 @@
 (ns stack-spike.om-app
   (:require-macros [cljs.core.async.macros :refer [go go-loop alt!]])
   (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
+            [om-tools.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! <! >! chan timeout]]
             [cljs-http.client :as http]
             [bidi.bidi :as bidi]
@@ -28,51 +28,68 @@
 
 (def app-state
   (atom {:page (resolve (current-url))
-         :ships []}))
+         :ships nil}))
 
 (defn ship-row [id-ship-pair owner]
   (om/component
    (let [ship (last id-ship-pair)]
-     (dom/tr {:id (str "ship-" (:id ship)) :className "ship"}
-             (dom/td #js{:id "id"}
-                     (dom/a #js{:href (str "/om/ships/" (:db/id ship))
-                                :className "edit"
-                                :onClick (fn [event]
+     (dom/tr {:id (str "ship-" (:id ship)) :class "ship"}
+             (dom/td {:id "id"}
+                     (dom/a {:href (str "/om/ships/" (:db/id ship))
+                                :class "edit"
+                                :on-click (fn [event]
                                            (.preventDefault event)
                                            (put! (om/get-shared owner :nav-chan) (.-href (.-target event))))}
                             (:db/id ship)))
-             (dom/td #js{:className "id"}
+             (dom/td {:class "id"}
                      (:ship/name ship))))))
 
+(defn handle-change [e owner {:keys [name]}]
+  (println "handling change!")
+  (om/set-state! owner :ship/name (.. e -target -value)))
+
 (defn ship [ship owner]
-  (log "got to ship!")
-  (log ship)
   (reify
-    om/IRender
-    (render [this]
-      (dom/h1 nil "OHAI! I AM SHIP #" (:db/id ship)  "!"))))
+    om/IInitState
+    (init-state [_]
+      {:db/id (:db/id ship) :ship/name (:ship/name ship)})
+    om/IRenderState
+    (render-state [this state]
+      (dom/form {:class "ship" :method "POST" :on-submit (fn [e]
+                                                           (.preventDefault e)
+                                                           (put! (om/get-shared owner :update-chan) state ))}
+                (dom/label {:for "name"} "Name")
+                (dom/input {:id "name" :type "text" :name "name" :value (:ship/name state)
+                            :on-change #(handle-change % owner state)})
+                (dom/input {:type "submit" :value "Update Ship"})))))
 
 (defn ships [ships owner]
   (reify
     om/IRender
     (render [this]
-      (dom/div nil (dom/table #js{:className "ships"}
+      (dom/div nil (dom/table {:class "ships"}
                           (apply dom/tbody nil
                                  (om/build-all ship-row ships)))
-               (dom/a #js{:className "new-ship" :href "/om/ships/new"} "New Ship")))
+               (dom/a {:class "new-ship" :href "/om/ships/new"} "New Ship")))
     ))
+
+(defn loading []
+  (om/component
+   (dom/h1 "Loading...")))
 
 (defn not-found []
   (om/component
    (dom/h1 nil "Not found.")))
 
 (defn render-page [app]
-  (condp = (get-in app [:page :handler])
-    :ships (om/build ships (get app :ships))
-    :ship (om/build ship
-                    (get (get app :ships)
-                         (long (get-in app [:page :route-params :id]))))
-    (om/build not-found nil)))
+  (if (nil? (:ships app))
+    (om/build loading nil)
+    (condp = (get-in app [:page :handler])
+      :ships (om/build ships (get app :ships))
+      :ship (om/build ship
+                      (get (get app :ships)
+                           (long (get-in app [:page :route-params :id]))))
+      (om/build not-found nil))))
 
 (defn fetch-ships [app]
   (go (let [response (<! (http/get "/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
@@ -96,12 +113,17 @@
   (set-page url))
 
 (defn main []
-  (let [nav-chan (chan)]
+  (let [nav-chan (chan)
+        update-chan (chan)]
     (go-loop []
-      (let [url (<! nav-chan)]
-        (log "nav-chan: " url)
-        (goto url)
-        (log "nav-chan complete!"))
+      (alt! nav-chan ([url]
+                      (log "nav-chan: " url)
+                      (goto url)
+                      (log "nav-chan complete!"))
+            update-chan ([ship-update]
+                         (om/update! (om/root-cursor app-state) [:ships (:db/id ship-update)] ship-update)
+                         (.back js/history)))
+
       (recur))
 
     (set! (.-onpopstate js/window) (fn [e]
@@ -111,4 +133,5 @@
     (om/root page
              app-state
              {:target (. js/document (getElementById "root"))
-              :shared {:nav-chan nav-chan}})))
+              :shared {:nav-chan nav-chan
+                       :update-chan update-chan}})))
