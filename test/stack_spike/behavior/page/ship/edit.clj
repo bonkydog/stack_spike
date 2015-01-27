@@ -5,7 +5,7 @@
             [stack-spike.core-test :refer [*test-om-interface*]]))
 
 (defn path [ship-id]
-  (str (if *test-om-interface* "#" "" ) "/ships/" ship-id))
+  (str (if *test-om-interface* "om" "" ) "/ships/" ship-id))
 
 (defn visit [ship-id]
   (browser/visit (path ship-id)))

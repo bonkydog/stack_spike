@@ -5,7 +5,7 @@
             [clj-webdriver.taxi :refer :all]))
 
 (defn path []
-  (str (if *test-om-interface* "#" "" ) "/ships"))
+  (str (if *test-om-interface* "om" "" ) "/ships"))
 
 (defn visit []
   (browser/visit (path)))

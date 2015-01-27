@@ -24,7 +24,7 @@
 
 (def browser :firefox)
 
-(def seconds-to-wait 500)
+(def seconds-to-wait 100)
 
 (def ^:dynamic *test-om-interface* false)
 
@@ -35,13 +35,6 @@
       (taxi/set-driver! (taxi/new-driver {:browser browser}))))
   taxi/*driver*)
 
-(defn system-fixture [t]
-  (let [system (component/start (test-application))]
-    (try
-      (t)
-      (finally
-        (db/destroy (:db system))
-        (component/stop system)))))
 
 (defonce ^:dynamic *test-root-url* "http://example.com")
 
