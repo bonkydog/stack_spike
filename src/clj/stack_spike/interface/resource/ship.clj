@@ -11,9 +11,9 @@
 
 
 (defn content [request]
-  (condp = (:content-type request)
-    "application/transit+json" (:body request)
-    "application/x-www-form-urlencoded" (:params request)))
+  (condp re-matches (:content-type request)
+    #"^application/transit\+json(;.*)?" (:body request)
+    #"^application/x-www-form-urlencoded(;.*)?" (:params request)))
 
 (defresource ship [db root-url]
   :available-media-types ["text/html", "application/transit+json"]
