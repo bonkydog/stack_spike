@@ -8,7 +8,8 @@
             [clojure.browser.repl]
             [weasel.repl :as weasel]
             [figwheel.client :as figwheel :include-macros true]
-            [stack-spike.tools :refer [log]]))
+            [stack-spike.tools :refer [log]])
+  (:import [goog Uri]))
 
 (enable-console-print!)
 
@@ -17,19 +18,16 @@
   ["/om" {"/ships" :ships
           ["/ships/" :id] :ship}])
 
-(defn current-path []
-  (.-pathname (js/URL. (.-href (.-location js/document)))))
+(defn current-url []
+  (.-href (.-location js/document)))
 
 (defn resolve [url-or-path]
-  (let [path (try (-> url-or-path
-                      js/URL.
-                      .-pathname)
-                  (catch js/Object e
-                    url-or-path))]
+  (let [path (.getPath (Uri. url-or-path))]
+    (println path)
     (bidi/match-route routes path)))
 
 (def app-state
-  (atom {:page (resolve (current-path))
+  (atom {:page (resolve (current-url))
          :ships nil}))
 
 
@@ -40,16 +38,28 @@
 
 
 (defn ship-row [id-ship-pair owner]
-  (om/component
-   (let [ship (last id-ship-pair)]
-     (dom/tr {:id (str "ship-" (:id ship)) :class "ship"}
-             (dom/td {:id "id"}
-                     (dom/a {:href (str "/om/ships/" (:db/id ship))
+  (reify
+    om/IInitState
+    (init-state [_] (last id-ship-pair))
+    om/IRenderState
+    (render-state [this state] 
+      (let [ship (last id-ship-pair)]
+        (dom/tr {:id (str "ship-" (:db/id ship)) :class "ship"}
+                (dom/td {:class "id"}
+                        (dom/a {:href (str "/om/ships/" (:db/id ship))
                                 :class "edit"
-                             :on-click (partial navigate owner)}
-                            (:db/id ship)))
-             (dom/td {:class "id"}
-                     (:ship/name ship))))))
+                                :on-click (partial navigate owner)}
+                               (:db/id ship)))
+                (dom/td {:class "name"}
+                        (:ship/name ship))
+                (dom/td {:class "controls"}
+                        (dom/a {:class "delete"
+                                :href "#"
+                                :on-click (fn [e]
+                                            (.preventDefault e)
+                                            (put! (om/get-shared owner :delete-chan) state)
+                                            nil)}
+                               "[delete]")))))))
 
 (defn handle-change [e owner {:keys [name]}]
   (.preventDefault e)
@@ -97,19 +107,25 @@
   (reify
     om/IRender
     (render [this]
-      (dom/div nil (dom/table {:class "ships"}
-                          (apply dom/tbody nil
-                                 (om/build-all ship-row ships)))
+      (dom/div nil (dom/table
+                    {:class "ships"}
+                    (dom/thead
+                     (dom/th "id")
+                     (dom/th "name"))
+                    (dom/tbody
+                     (om/build-all ship-row ships)))
                (dom/a {:class "new-ship" :href "/om/ships/new" :on-click (partial navigate owner) } "New Ship")))
     ))
 
 (defn loading []
   (om/component
-   (dom/h1 "Loading...")))
+   (dom/h1 {:class "loading"} "Loading...")))
 
 (defn not-found []
   (om/component
-   (dom/h1 nil "Not found.")))
+   (dom/div
+    (dom/h1 nil "Not found.")
+    (dom/p (pr-str @app-state)))))
 
 (defn render-page [app]
   (if (nil? (:ships app))
@@ -126,7 +142,10 @@
       (om/build not-found nil))))
 
 (defn fetch-ships [app]
+  (println "FETCHING SHIPS NOW!!!")
   (go (let [response (<! (http/get "/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
+        (println "GOT A RESPONSE!!!")
+        (prn response)
         (om/update! app :ships (:body response)))))
 
 
@@ -155,7 +174,8 @@
 (defn main []
   (let [nav-chan (chan)
         update-chan (chan)
-        create-chan (chan)]
+        create-chan (chan)
+        delete-chan (chan)]
     (go-loop []
       (alt! nav-chan ([url]
                       (log "nav-chan: " url)
@@ -174,19 +194,26 @@
                                                        {:transit-params (de-namespace-keys  ship-creation)
                                                         :headers {"Accept" "application/transit+json;verbose"
                                                                   "X-CSRF-Token" csrf-token}}))]
-                           (prn (:body response))
                            (om/update! (om/root-cursor app-state) [:ships (:db/id (:body response))] (:body response))
-                           (goto "/om/ships"))))
+                           (goto "/om/ships")))
+            delete-chan ([ship-deletion]
+                         (http/post (str "/ships/" (:db/id ship-deletion))
+                                    {:headers {"Accept" "application/transit+json;verbose"
+                                               "X-HTTP-Method-Override" "DELETE"
+                                               "X-CSRF-Token" csrf-token}})
+                         (om/transact! (om/root-cursor app-state) :ships #(dissoc % (:db/id ship-deletion)))))
 
       (recur))
 
     (set! (.-onpopstate js/window) (fn [e]
                                      (log e)
                                      (log "pop!")
-                                     (set-page (current-path))))
+                                     (set-page (current-url))))
     (om/root page
              app-state
              {:target (. js/document (getElementById "root"))
               :shared {:nav-chan nav-chan
                        :update-chan update-chan
-                       :create-chan create-chan}})))
+                       :create-chan create-chan
+                       :delete-chan delete-chan}})))
+
