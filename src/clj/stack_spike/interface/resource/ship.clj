@@ -63,6 +63,6 @@
                          (entity-gateway db)
                          ship-id)}))
 
-  :post-redirect? (fn [ctx] (if (= "text/html" (spy (get-in ctx [:representation :media-type] )))
+  :post-redirect? (fn [ctx] (if (= "text/html" (get-in ctx [:representation :media-type] ))
                               {:location (r/url-for root-url :ships)}))
   :handle-created (fn [ctx] (::ship ctx)))
