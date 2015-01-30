@@ -24,15 +24,14 @@
 
 (def browser :firefox)
 
-(def seconds-to-wait 100)
+(def miliseconds-to-wait 1000)
 
 (def ^:dynamic *test-om-interface* false)
 
 (defn setup-browser-session! []
-  (try
-    (taxi/implicit-wait taxi/*driver* seconds-to-wait)
-    (catch Exception e
-      (taxi/set-driver! (taxi/new-driver {:browser browser}))))
+  (if-not (bound? #'taxi/*driver*)
+    (taxi/set-driver! (taxi/new-driver {:browser browser})))
+  (taxi/implicit-wait taxi/*driver* miliseconds-to-wait)
   taxi/*driver*)
 
 

@@ -2,7 +2,7 @@
   (:require [clj-webdriver.taxi :refer :all]
             [clojure.string :as s]
             [clojure.test :refer :all]
-            [stack-spike.core-test :refer [path->url seconds-to-wait]]
+            [stack-spike.core-test :refer [path->url miliseconds-to-wait]]
             [stack-spike.external.url :refer [local-root-url]]
             [stack-spike.utility.debug :refer [dbg]]))
 
@@ -14,7 +14,7 @@
 (defn arrive [path]
   (let [expected-url (path->url path)]
     (try
-      (wait-until (fn [] (= expected-url (current-url)) ) seconds-to-wait)
+      (wait-until (fn [] (= expected-url (current-url)) ) miliseconds-to-wait)
       (catch org.openqa.selenium.TimeoutException e
         (let [actual-url (current-url)]
           ;; we assert instead of calling "is" here, because if we're on
