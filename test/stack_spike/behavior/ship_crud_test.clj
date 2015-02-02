@@ -6,7 +6,7 @@
              [new :as ship.new]
              [edit :as ship.edit])))
 
-(use-fixtures :once integration-test-fixture)
+(use-fixtures :each integration-test-fixture)
 
 (defn ship-crud-test []
   (ship.index/visit)
