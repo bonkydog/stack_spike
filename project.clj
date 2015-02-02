@@ -37,7 +37,7 @@
                  [org.slf4j/slf4j-log4j12 "1.7.10"]
                  [com.stuartsierra/component "0.2.2"]
                  [clj-webdriver "0.6.1"]
-                 [cljs-http "0.1.24"]
+                 [cljs-http "0.1.25"]
                  [org.clojure/core.cache "0.6.4"]]
 
 
