@@ -7,8 +7,6 @@
   :source-paths ["src/clj" "src/cljs"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [compojure "1.2.0"]
-                 [enlive "1.1.5"]
                  [org.clojure/clojurescript "0.0-2760"]
                  [figwheel "0.1.4-SNAPSHOT"]
                  [com.cemerick/piggieback "0.1.5"]
