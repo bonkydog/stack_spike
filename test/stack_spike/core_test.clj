@@ -28,9 +28,13 @@
 
 (def ^:dynamic *test-om-interface* false)
 
+(defn on-exit [f]
+  (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
+
 (defn setup-browser-session! []
   (if-not (bound? #'taxi/*driver*)
-    (taxi/set-driver! (taxi/new-driver {:browser browser})))
+    (taxi/set-driver! (taxi/new-driver {:browser browser}))
+    (on-exit taxi/quit))
   (taxi/implicit-wait taxi/*driver* miliseconds-to-wait)
   taxi/*driver*)
 
