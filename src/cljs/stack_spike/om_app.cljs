@@ -33,7 +33,7 @@
       (let [ship (last id-ship-pair)]
         (dom/tr {:id (str "ship-" (:db/id ship)) :class "ship"}
                 (dom/td {:class "id"}
-                        (dom/a {:href (str "/om/ships/" (:db/id ship))
+                        (dom/a {:href (str "/ships/" (:db/id ship))
                                 :class "edit"
                                 :on-click (partial navigate owner)}
                                (:db/id ship)))
@@ -101,7 +101,7 @@
                      (dom/th "name"))
                     (dom/tbody
                      (om/build-all ship-row ships)))
-               (dom/a {:class "new-ship" :href "/om/ships/new" :on-click (partial navigate owner) } "New Ship")))
+               (dom/a {:class "new-ship" :href "/ships/new" :on-click (partial navigate owner) } "New Ship")))
     ))
 
 (defn loading []
@@ -130,7 +130,7 @@
 
 (defn fetch-ships [app]
   (println "FETCHING SHIPS NOW!!!")
-  (go (let [response (<! (http/get "/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
+  (go (let [response (<! (http/get "/api/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
         (println "GOT A RESPONSE!!!")
         (prn response)
         (om/update! app :ships (:body response)))))
@@ -169,22 +169,22 @@
                       (goto url)
                       (log "nav-chan complete!"))
             update-chan ([ship-update]
-                         (http/post (str "/ships/" (:db/id ship-update))
+                         (http/post (str "/api/ships/" (:db/id ship-update))
                                     {:transit-params (de-namespace-keys  ship-update)
                                      :headers {"Accept" "application/transit+json;verbose"
                                                "X-HTTP-Method-Override" "PUT"
                                                "X-CSRF-Token" csrf-token}})
                          (om/update! (om/root-cursor app-state) [:ships (:db/id ship-update)] ship-update)
-                         (goto "/om/ships"))
+                         (goto "/ships"))
             create-chan ([ship-creation]
-                         (let [response (<! (http/post "/ships"
+                         (let [response (<! (http/post "/api/ships"
                                                        {:transit-params (de-namespace-keys  ship-creation)
                                                         :headers {"Accept" "application/transit+json;verbose"
                                                                   "X-CSRF-Token" csrf-token}}))]
                            (om/update! (om/root-cursor app-state) [:ships (:db/id (:body response))] (:body response))
-                           (goto "/om/ships")))
+                           (goto "/ships")))
             delete-chan ([ship-deletion]
-                         (http/post (str "/ships/" (:db/id ship-deletion))
+                         (http/post (str "/api/ships/" (:db/id ship-deletion))
                                     {:headers {"Accept" "application/transit+json;verbose"
                                                "X-HTTP-Method-Override" "DELETE"
                                                "X-CSRF-Token" csrf-token}})

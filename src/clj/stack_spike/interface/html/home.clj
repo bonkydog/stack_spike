@@ -12,7 +12,7 @@
      [:h1 "Hello!"]
      [:p "HTML interface is no longer supported."]
      [:p "Om interface is here:"
-      [:a {:href "/om/ships"} "OM"]]]]))
+      [:a {:href "/ships"} "OM"]]]]))
 
 (defn om [_]
   (html

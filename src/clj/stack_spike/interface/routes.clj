@@ -6,11 +6,11 @@
 (import java.net.URL)
 
 (def routes
-  ["/" {"" :home
-        "ships" :ships
-        ["ships/" :id] :ship
-        ["om/" #".*"] :om
-        "js" (r/resources-maybe {:prefix "public/js/"})}])
+  ["/" [["" :home]
+        ["api/ships" :ships]
+        [["api/ships/" :id] :ship]
+        ["js" (r/resources-maybe {:prefix "public/js/"})]
+        [[#".*"] :om]]])
 
 (defn path-for [route & params]
   (apply b/path-for routes route params))
@@ -19,3 +19,4 @@
   (-> (u/url root-url)
     (assoc :path (apply path-for route params))
     str))
+()

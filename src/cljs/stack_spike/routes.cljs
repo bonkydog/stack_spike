@@ -3,8 +3,8 @@
   (:import [goog Uri]))
 
 (def routes
-  ["/om" {"/ships" :ships
-          ["/ships/" :id] :ship}])
+  ["/" {"ships" :ships
+        ["ships/" :id] :ship}])
 
 (defn current-url []
   (.-href (.-location js/document)))
