@@ -26,8 +26,6 @@
 
 (def miliseconds-to-wait 1000)
 
-(def ^:dynamic *test-om-interface* false)
-
 (defn on-exit [f]
   (.addShutdownHook (Runtime/getRuntime) (Thread. f)))
 

@@ -30,6 +30,4 @@
 (deftest ship-html-crud-test
   (ship-crud-test))
 
-(deftest ship-om-crud-test
-  (binding [*test-om-interface* true]
-    (ship-crud-test)))
+

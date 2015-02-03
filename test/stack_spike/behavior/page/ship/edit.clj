@@ -1,11 +1,10 @@
 (ns stack-spike.behavior.page.ship.edit
   (:require [clojure.test :refer :all]
             [stack-spike.behavior.browser :as browser]
-            [clj-webdriver.taxi :refer :all]
-            [stack-spike.core-test :refer [*test-om-interface*]]))
+            [clj-webdriver.taxi :refer :all]))
 
 (defn path [ship-id]
-  (str (if *test-om-interface* "om" "" ) "/ships/" ship-id))
+  (str "/om/ships/" ship-id))
 
 (defn visit [ship-id]
   (browser/visit (path ship-id)))

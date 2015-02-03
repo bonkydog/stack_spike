@@ -10,8 +10,7 @@
     [:head]
     [:body
      [:h1 "Hello!"]
-     [:p "HTML interface is here:"
-      [:a {:href "/ships"} "HTML"]]
+     [:p "HTML interface is no longer supported."]
      [:p "Om interface is here:"
       [:a {:href "/om/ships"} "OM"]]]]))
 
