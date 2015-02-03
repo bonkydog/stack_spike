@@ -27,6 +27,7 @@
   (atom {:page nil
          :ships nil}))
 
+(def action-chan (chan))
 
 (defn set-page [path]
   (om/update! (om/root-cursor app-state) :page (resolve path)))
@@ -40,6 +41,10 @@
   (goto (-> event .-target .-href))
   nil)
 
+(defn activate [event action arg]
+  (.preventDefault event)
+  (put! action-chan [action arg])
+  nil)
 
 (defn ship-row [id-ship-pair owner]
   (reify
@@ -55,7 +60,8 @@
                 (dom/td {:class "name"}
                         (:ship/name ship))
                 (dom/td {:class "controls"}
-                        (dom/a {:class "delete" :href "#"}
+                        (dom/a {:class "delete" :href "#"
+                                :on-click #(activate % :delete (:db/id ship))}
                                "[delete]")))))))
 
 (defn ship [ship owner]
@@ -66,7 +72,7 @@
 
     om/IRenderState
     (render-state [this state]
-      (dom/form {:class "ship" :method "POST"}
+      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :update (om/get-state owner))}
                 (dom/label {:for "name"} "Name")
                 (dom/input {:id "name" :type "text" :name "name" :value (:ship/name state) :auto-focus true
                             :on-change #(om/set-state! owner :ship/name (-> % .-target .-value))})
@@ -81,7 +87,7 @@
 
     om/IRenderState
     (render-state [this state]
-      (dom/form {:class "ship" :method "POST"}
+      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :create (om/get-state owner))}
                 (dom/label {:for "name"} "Name")
                 (dom/input {:id "name" :type "text" :name "name" :value (:ship/name state) :auto-focus true
                             :on-change #(om/set-state! owner :ship/name (-> % .-target .-value))})
@@ -126,12 +132,9 @@
       (om/build not-found nil))))
 
 (defn fetch-ships [app]
-  (println "FETCHING SHIPS NOW!!!")
-  (go (let [response (<! (http/get "/api/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
-        (println "GOT A RESPONSE!!!")
-        (prn response)
-        (om/update! app :ships (:body response)))))
 
+  (go (let [response (<! (http/get "/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
+        (om/update! app :ships (:body response)))))
 
 (defn page [app owner]
   (reify
@@ -151,15 +154,27 @@
   (apply hash-map (mapcat (fn [[k v]] [(-> k name keyword) v]) m)))
 
 
+
 (declare app-container
          app-state)
 
 (defn main []
   (set! (.-onpopstate js/window) (fn [e]
                                    (set-page (current-url))))
+  (go-loop []
+    (let [[action arg] (<! action-chan)]
+      (log action)
+      (case action
+        :delete (om/transact! (om/root-cursor app-state) :ships #(dissoc % arg))
+        :create (om/transact! (om/root-cursor app-state) :ships #(assoc % (:db/id arg) arg))
+        :update (om/transact! (om/root-cursor app-state) :ships #(assoc % (:db/id arg) arg))))
+    (prn @app-state)
+    (recur))
   (om/root page
            app-state
-           {:target (. js/document (getElementById "root"))}))
+           {:target (. js/document (getElementById "root"))
+            :tx-listen prn
+            :shared {:action-chan action-chan}}))
 
 
 (defn ^:export render-to-string
