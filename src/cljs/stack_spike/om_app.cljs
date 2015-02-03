@@ -4,27 +4,14 @@
             [om-tools.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! <! >! chan timeout]]
             [cljs-http.client :as http]
-            [bidi.bidi :as bidi]
             [clojure.browser.repl]
             [weasel.repl :as weasel]
             [figwheel.client :as figwheel :include-macros true]
-            [stack-spike.tools :refer [log]])
+            [stack-spike.tools :refer [log]]
+            [stack-spike.routes :refer [routes current-url resolve]])
   (:import [goog Uri]))
 
 (enable-console-print!)
-
-
-(def routes
-  ["/om" {"/ships" :ships
-          ["/ships/" :id] :ship}])
-
-(defn current-url []
-  (.-href (.-location js/document)))
-
-(defn resolve [url-or-path]
-  (let [path (.getPath (Uri. url-or-path))]
-    (println path)
-    (bidi/match-route routes path)))
 
 (def app-state
   (atom {:page (resolve (current-url))
