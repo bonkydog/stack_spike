@@ -169,24 +169,23 @@
                       (goto url)
                       (log "nav-chan complete!"))
             update-chan ([ship-update]
-                         (http/post (str "/api/ships/" (:db/id ship-update))
-                                    {:transit-params (de-namespace-keys  ship-update)
+                         (http/post "/api/action"
+                                    {:transit-params [:update-ship (de-namespace-keys ship-update)]
                                      :headers {"Accept" "application/transit+json;verbose"
-                                               "X-HTTP-Method-Override" "PUT"
                                                "X-CSRF-Token" csrf-token}})
                          (om/update! (om/root-cursor app-state) [:ships (:db/id ship-update)] ship-update)
                          (goto "/ships"))
             create-chan ([ship-creation]
-                         (let [response (<! (http/post "/api/ships"
-                                                       {:transit-params (de-namespace-keys  ship-creation)
+                         (let [response (<! (http/post "/api/action"
+                                                       {:transit-params [:create-ship (de-namespace-keys  ship-creation)]
                                                         :headers {"Accept" "application/transit+json;verbose"
                                                                   "X-CSRF-Token" csrf-token}}))]
-                           (om/update! (om/root-cursor app-state) [:ships (:db/id (:body response))] (:body response))
+                           (om/update! (om/root-cursor app-state) [:ships (:db/id (get-in response [:body :result]))] (get-in response [:body :result]))
                            (goto "/ships")))
             delete-chan ([ship-deletion]
-                         (http/post (str "/api/ships/" (:db/id ship-deletion))
-                                    {:headers {"Accept" "application/transit+json;verbose"
-                                               "X-HTTP-Method-Override" "DELETE"
+                         (http/post "/api/action"
+                                    {:transit-params [:delete-ship (de-namespace-keys ship-deletion)]
+                                     :headers {"Accept" "application/transit+json;verbose"
                                                "X-CSRF-Token" csrf-token}})
                          (om/transact! (om/root-cursor app-state) :ships #(dissoc % (:db/id ship-deletion)))))
 

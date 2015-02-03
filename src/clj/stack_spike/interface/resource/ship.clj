@@ -9,42 +9,21 @@
             [clojure.tools.logging :refer [debug spy]]))
 
 
-(defn content [request]
-  (:body request))
-
-
-
-(defn ship []
-  :available-media-types ["application/transit+json"]
-  :allowed-methods [:get :put :delete]
-  :exists? (fn [ctx]
-             (assoc ctx ::ship
-                    (let [ship-id (get-in ctx [:request :params :id])]
-                      (if (= ship-id "new")
-                        (new-ship)
-                        (view-ship
-                         (entity-gateway (get-in ctx [:request :db]))
-                         (Long/parseLong ship-id))))))
-  :put! (fn [ctx]
-          (let [params (content (:request ctx))]
-            {::id (update-ship (entity-gateway (get-in ctx [:request :db])) params)}))
-  :delete! (fn [ctx]
-             (let [id (get-in ctx [:request :params :id])]
-               (delete-ship (entity-gateway (get-in ctx [:request :db])) id)) )
-  :new? false
-  :respond-with-entity? true
-  :handle-ok (fn [ctx] (::ship ctx)))
 
 (defresource ship-list []
   :available-media-types ["application/transit+json"]
-  :allowed-methods [:get :post]
-  :handle-ok (fn [ctx] (list-ships (entity-gateway (get-in ctx [:request :db]))))
-  :post! (fn [ctx]
-           (let [params (content (:request ctx))
-                 ship-id (create-ship (entity-gateway (get-in ctx [:request :db])) params)]
-             {::id ship-id
-              ::ship (view-ship
-                         (entity-gateway (get-in ctx [:request :db]))
-                         ship-id)}))
+  :allowed-methods [:get]
+  :handle-ok (fn [ctx] (list-ships (entity-gateway (get-in ctx [:request :db])))))
 
-   :handle-created (fn [ctx] (::ship ctx)))
+
+(defresource action []
+  :available-media-types ["application/transit+json"]
+  :allowed-methods [:post]
+  :post! (fn [ctx]
+           (let [[action arg] (get-in ctx [:request :body])
+                 eg (entity-gateway (get-in ctx [:request :db]))]
+             {::action-result (case action
+                               :create-ship (create-ship eg arg)
+                               :update-ship (update-ship eg arg)
+                               :delete-ship (delete-ship eg (:id arg)))}))
+  :handle-created (fn [ctx] {:result (::action-result ctx)}))

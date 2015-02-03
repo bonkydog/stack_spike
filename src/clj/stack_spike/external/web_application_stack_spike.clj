@@ -59,7 +59,7 @@
   (make-handler [this]
     (->  (b/make-handler
           stack-spike.interface.routes/routes
-          (fn [r] (get stack-spike.interface.resources/resources r r)))
+          #(get stack-spike.interface.resources/resources % %))
          (wrap-inject-database (:db this))
          wrap-anti-forgery
          wrap-form-method

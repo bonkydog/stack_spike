@@ -8,7 +8,7 @@
 (def routes
   ["/" [["" :home]
         ["api/ships" :ships]
-        [["api/ships/" :id] :ship]
+        ["api/action" :action]
         ["js" (r/resources-maybe {:prefix "public/js/"})]
         [[#".*"] :om]]])
 

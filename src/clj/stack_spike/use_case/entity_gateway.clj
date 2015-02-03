@@ -5,10 +5,10 @@
     "Retrieve the entity with the requested id.")
 
   (store-entity [this entity]
-    "Store entity in the database.")
+    "Store entity in the database. Return inserted entity.")
 
   (retrieve-entities [this type]
     "Retrieve a map of all entities of the requested type, keyed by id.")
 
   (delete-entity [this id]
-    "Deletes the entity with the requested id"))
+    "Deletes the entity with the requested id."))

@@ -35,9 +35,10 @@
 
   (store-entity [this entity]
     (let [tx-data (map->tx-data entity)
-          result @(d/transact (conn this) [tx-data])]
-      (or (d/resolve-tempid (:db-after result) (:tempids result) (:db/id tx-data))
-          (:db/id tx-data))))
+          result @(d/transact (conn this) [tx-data])
+          id (or (d/resolve-tempid (:db-after result) (:tempids result) (:db/id tx-data))
+                  (:db/id tx-data))]
+      (entity->map (d/entity (:db-after result) id))))
 
   (retrieve-entities [this type]
     (let [name-attribute (str type "/name")]
@@ -51,7 +52,8 @@
            (mapcat #(vector (:db/id %) %))
            (apply sorted-map))))
   (delete-entity [this id]
-    @(d/transact (conn this) [[:db.fn/retractEntity (normalize-id id)]])))
+    @(d/transact (conn this) [[:db.fn/retractEntity (normalize-id id)]])
+    true))
 
 (defn new-entity-gateway-datomic [db]
   (map->EntityGatewayDatomic {:db db}))

@@ -7,6 +7,6 @@
 
 (def resources 
   {:home (home/home)
-   :ship (ship/ship)
    :ships (ship/ship-list)
+   :action (ship/action)
    :om (home/om)})
