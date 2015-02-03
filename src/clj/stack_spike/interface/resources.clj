@@ -5,8 +5,8 @@
              [ship :as ship]
              [home :as home])))
 
-(defn resources [db]
-  {:home (home/home db)
-   :ship (ship/ship db)
-   :ships (ship/ship-list db)
-   :om (home/om db)})
+(def resources 
+  {:home (home/home)
+   :ship (ship/ship)
+   :ships (ship/ship-list)
+   :om (home/om)})

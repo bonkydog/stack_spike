@@ -37,6 +37,12 @@
         (throw e)))))
 
 
+
+(defn wrap-inject-database
+  [handler db]
+  (fn [request]
+    (handler (assoc request :db db))))
+
 (defrecord WebApplicationStackSpike [db host-name port handler]
 
   component/Lifecycle
@@ -53,18 +59,16 @@
   (make-handler [this]
     (->  (b/make-handler
           stack-spike.interface.routes/routes
-          (fn [r] (get (stack-spike.interface.resources/resources
-                        (:db this))
-                       r
-                       r)))
-      wrap-anti-forgery
-      wrap-form-method
-      wrap-params
-      (wrap-transit-body {:keywords? true} )
-      wrap-session
-      (wrap-trace :header :ui)
-      wrap-log-exceptions
-      wrap-stacktrace-web)))
+          (fn [r] (get stack-spike.interface.resources/resources r r)))
+         (wrap-inject-database (:db this))
+         wrap-anti-forgery
+         wrap-form-method
+         wrap-params
+         (wrap-transit-body {:keywords? true} )
+         wrap-session
+         (wrap-trace :header :ui)
+         wrap-log-exceptions
+         wrap-stacktrace-web)))
 
 
 (defn new-web-application-stack-spike [host-name port]
