@@ -12,7 +12,7 @@
 (defn content [request]
   (:body request))
 
-(defresource ship [db root-url]
+(defn ship [db]
   :available-media-types ["application/transit+json"]
   :allowed-methods [:get :put :delete]
   :exists? (fn [ctx]
@@ -33,7 +33,7 @@
   :respond-with-entity? true
   :handle-ok (fn [ctx] (::ship ctx)))
 
-(defresource ship-list [db root-url]
+(defresource ship-list [db]
   :available-media-types ["application/transit+json"]
   :allowed-methods [:get :post]
   :handle-ok (fn [ctx] (list-ships (entity-gateway db)))

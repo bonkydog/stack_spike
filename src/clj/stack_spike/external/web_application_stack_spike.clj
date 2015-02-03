@@ -54,8 +54,7 @@
     (->  (b/make-handler
           stack-spike.interface.routes/routes
           (fn [r] (get (stack-spike.interface.resources/resources
-                        (:db this)
-                        (str (local-root-url port)))
+                        (:db this))
                        r
                        r)))
       wrap-anti-forgery
