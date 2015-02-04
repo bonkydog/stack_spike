@@ -1,29 +1,26 @@
 (ns stack-spike.interface.resource.ship
-  (:require [liberator.core :refer [defresource]]
-            [liberator.representation :refer [ring-response]]
-            [stack-spike.use-case.list-ships :refer [list-ships]]
-            [stack-spike.use-case.view-ship :refer [view-ship new-ship create-ship update-ship delete-ship]]
+  (:require [cognitect.transit :as transit]
+            [ring.util.response :as ring]
             [stack-spike.external.database :refer [entity-gateway]]
-            [stack-spike.interface.routes :as r]
-            [stack-spike.utility.debug :refer [dbg]]
-            [clojure.tools.logging :refer [debug spy]]))
+            [stack-spike.use-case.list-ships :refer [list-ships]]
+            [stack-spike.use-case.view-ship :refer [create-ship update-ship delete-ship]])
+  (:import (java.io ByteArrayOutputStream)))
 
+(defn transit-response [body]
+  (let [stream (ByteArrayOutputStream. 4096)
+        writer (transit/writer stream :json-verbose)]
+    (transit/write writer body)
+    (-> (ring/response (.toString stream))
+        (ring/content-type "application/transit+json; charset=utf-8"))))
 
+(defn ship-list [request]
+  (transit-response (list-ships (entity-gateway (:db request)))))
 
-(defresource ship-list []
-  :available-media-types ["application/transit+json"]
-  :allowed-methods [:get]
-  :handle-ok (fn [ctx] (list-ships (entity-gateway (get-in ctx [:request :db])))))
-
-
-(defresource action []
-  :available-media-types ["application/transit+json"]
-  :allowed-methods [:post]
-  :post! (fn [ctx]
-           (let [[action arg] (get-in ctx [:request :body])
-                 eg (entity-gateway (get-in ctx [:request :db]))]
-             {::action-result (case action
-                               :create-ship (create-ship eg arg)
-                               :update-ship (update-ship eg arg)
-                               :delete-ship (delete-ship eg (:id arg)))}))
-  :handle-created (fn [ctx] {:result (::action-result ctx)}))
+(defn action [request]
+  (let [[action arg] (:body request)
+        eg (entity-gateway (:db request))
+        result (case action
+          :create-ship (create-ship eg arg)
+          :update-ship (update-ship eg arg)
+          :delete-ship (delete-ship eg (:id arg)))]
+    (transit-response {:result result})))

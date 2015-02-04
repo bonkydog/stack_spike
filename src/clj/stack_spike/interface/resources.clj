@@ -6,7 +6,7 @@
              [home :as home])))
 
 (def resources 
-  {:home (home/home)
-   :ships (ship/ship-list)
-   :action (ship/action)
-   :om (home/om)})
+  {:home home/home
+   :ships ship/ship-list
+   :action ship/action
+   :om home/om})

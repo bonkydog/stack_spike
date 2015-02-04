@@ -27,10 +27,8 @@
                  [com.fasterxml.jackson.core/jackson-annotations "2.5.0"]
                  [com.cognitect/transit-clj "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.202"]
-                 [io.clojure/liberator-transit "0.3.0"]
                  [ring-transit "0.1.3"]
                  [bidi "1.15.0" :exclusions [org.clojure/clojure]]
-                 [liberator "0.12.3-SNAPSHOT"]
                  [hiccup "1.0.5"]
                  [com.datomic/datomic-pro "0.9.5078"
                   :exclusions [org.slf4j/slf4j-nop org.slf4j/log4j-over-slf4j joda-time]]

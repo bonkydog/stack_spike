@@ -4,7 +4,7 @@
             [hiccup.element :refer [link-to javascript-tag]]))
 
 
-(defn home [_]
+(defn home []
   (html
    [:html
     [:head]
@@ -14,7 +14,7 @@
      [:p "Om interface is here:"
       [:a {:href "/ships"} "OM"]]]]))
 
-(defn om [_]
+(defn om []
   (html
    [:html
     [:head

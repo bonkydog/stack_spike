@@ -6,14 +6,12 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-            [liberator.dev :refer [wrap-trace]]
             [bidi.ring :as b]
             [stack-spike.interface.routes :refer [routes]]
             [stack-spike.interface.resources :refer [resources]]
             [stack-spike.external.url :refer [local-root-url]]
             [clojure.string :as str]
-            [io.clojure.liberator-transit]
-            [ring.middleware.transit :refer [wrap-transit-body]]
+            [ring.middleware.transit :refer [wrap-transit-body wrap-transit-response]]
             [clojure.tools.logging :as log]
             [stack-spike.utility.debug :refer [dbg]]))
 
@@ -62,11 +60,9 @@
           #(get stack-spike.interface.resources/resources % %))
          (wrap-inject-database (:db this))
          wrap-anti-forgery
-         wrap-form-method
          wrap-params
          (wrap-transit-body {:keywords? true} )
          wrap-session
-         (wrap-trace :header :ui)
          wrap-log-exceptions
          wrap-stacktrace-web)))
 

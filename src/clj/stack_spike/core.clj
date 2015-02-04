@@ -1,7 +1,6 @@
 (ns stack-spike.core
   (:require [com.stuartsierra.component :as component]
             [ring.middleware.stacktrace :refer [wrap-stacktrace-web]]
-            [liberator.core :refer [defresource]]
             [environ.core :refer [env]]
             (stack-spike.external
              [url :refer [local-host-name]]

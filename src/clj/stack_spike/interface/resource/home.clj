@@ -1,11 +1,13 @@
 (ns stack-spike.interface.resource.home
-  (:require [liberator.core :refer [defresource]]
+  (:require [ring.util.response :as ring]
             [stack-spike.interface.html.home :as html]))
 
-(defresource om []
-  :available-media-types ["text/html"]
-  :handle-ok html/om)
+(defn html-response [body]
+  (-> (ring/response body)
+      (ring/content-type "text/html")))
 
-(defresource home []
-  :available-media-types ["text/html"]
-  :handle-ok html/home)
+(defn om [_]
+  (html-response (html/om)))
+
+(defn home [_]
+  (html-response (html/home)))
