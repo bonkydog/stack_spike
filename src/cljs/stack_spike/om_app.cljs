@@ -2,13 +2,15 @@
   (:require-macros [cljs.core.async.macros :refer [go go-loop alt!]])
   (:require [om.core :as om :include-macros true]
             [om-tools.dom :as dom :include-macros true]
+            [om.dom]
             [cljs.core.async :refer [put! <! >! chan timeout]]
             [cljs-http.client :as http]
             [clojure.browser.repl]
-            [weasel.repl :as weasel]
             [figwheel.client :as figwheel :include-macros true]
             [stack-spike.tools :refer [log]]
-            [stack-spike.routes :refer [routes current-url resolve]])
+            [stack-spike.routes :refer [routes current-url resolve]]
+            [cljs.reader :as edn]
+            [goog.dom])
   (:import [goog Uri]))
 
 (enable-console-print!)
@@ -143,7 +145,7 @@
       (dom/div nil (render-page app)))
     om/IWillMount
     (will-mount [this]
-      (fetch-ships app))))
+      #_(fetch-ships app))))
 
 (defn set-page [path]
   (om/update! (om/root-cursor app-state) :page (resolve path)))
@@ -153,7 +155,9 @@
   (set-page url))
 
 (def csrf-token
-  (.-content (.getElementById js/document "csrf-token")))
+  (if (exists? js/document)
+    (.-content (.getElementById js/document "csrf-token"))
+    "(figure out how to handle csrf in nashorn)"))
 
 (defn de-namespace-keys [m]
   (apply hash-map (mapcat (fn [[k v]] [(-> k name keyword) v]) m)))
@@ -203,3 +207,30 @@
                        :create-chan create-chan
                        :delete-chan delete-chan}})))
 
+(declare app-container
+         app-state)
+
+(defn ^:export render-to-string
+  "Takes an app state as EDN and returns the HTML for that state.
+  It can be invoked from JS as `omelette.view.render_to_string(edn)`."
+  [state-edn]
+  (->> state-edn
+       edn/read-string
+       (om/build page)
+       om.dom/render-to-str))
+
+(defn ^:export init
+  "Initializes the app.
+  Should only be called once on page load.
+  It can be invoked from JS as `omelette.view.init(appElementId, stateElementId)`."
+  [app-id state-id]
+  (->> state-id
+       goog.dom/getElement
+       .-textContent
+       edn/read-string
+       atom
+       (set! app-state))
+  (->> app-id
+       goog.dom/getElement
+       (set! app-container))
+  (main))

@@ -12,8 +12,6 @@
             [stack-spike.external.database :refer [entity-gateway]]
             [stack-spike.use-case.entity-gateway :as eg]
             [stack-spike.external.url :refer [local-host-name]]
-
-
             [cemerick.piggieback :as piggieback]
             [weasel.repl.websocket :as weasel]
             [leiningen.core.main :as lein]))

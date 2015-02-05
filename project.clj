@@ -16,9 +16,8 @@
                  [log4j "1.2.17"]
                  [org.clojure/tools.logging "0.3.1"]
                  [environ "1.0.0"]
-                 [org.om/om "0.8.1"]
+                 [org.omcljs/om "0.8.8"]
                  [prismatic/om-tools "0.3.10"]
-                 [om-sync "0.1.1"]
                  [ring/ring "1.3.2"]
                  [ring/ring-anti-forgery "1.0.0"]
                  [com.fasterxml.jackson.datatype/jackson-datatype-json-org "2.5.0"]
@@ -46,14 +45,14 @@
 
   :uberjar-name "stack_spike.jar"
 
-  :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
-                             :compiler {:output-to     "resources/public/js/app.js"
-                                        :output-dir    "resources/public/js/out"
-                                        :source-map    "resources/public/js/out.js.map"
-                                        :preamble      ["react/react.min.js"]
-                                        :externs       ["react/externs/react.js"]
+  :cljsbuild {:builds {:app {:source-paths ["src"]
+                             :compiler {:main "stack-spike.dev"
+                                        :output-to "resources/public/js/main.js"
+                                        :output-dir "resources/public/js/out"
+                                        :asset-path "js/out"
                                         :optimizations :none
-                                        :pretty-print  true}}}}
+                                        :pretty-print true
+                                        :source-map true}}}}
 
   :profiles {:dev {:repl-options {:init-ns user
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
@@ -75,5 +74,6 @@
                        :cljsbuild {:builds {:app
                                             {:source-paths ["env/prod/cljs"]
                                              :compiler
-                                             {:optimizations :advanced
+                                             {:main "stack-spike.prod"
+                                              :optimizations :advanced
                                               :pretty-print false}}}}}})

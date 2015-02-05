@@ -7,6 +7,6 @@
 
 (def resources 
   {:home home/home
-   :ships ship/ship-list
+   :ships-api ship/ship-list
    :action ship/action
    :om home/om})

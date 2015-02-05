@@ -7,7 +7,9 @@
         ["ships/" :id] :ship}])
 
 (defn current-url []
-  (.-href (.-location js/document)))
+  (if (exists? js/document)
+    (.-href (.-location js/document))
+    "/ships#nashorn"))
 
 (defn resolve [url-or-path]
   (let [path (.getPath (Uri. url-or-path))]
