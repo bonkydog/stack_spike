@@ -14,17 +14,21 @@
             [stack-spike.external.url :refer [local-host-name]]
             [cemerick.piggieback :as piggieback]
             [weasel.repl.websocket :as weasel]
+            [cljs.repl.browser]
             [leiningen.core.main :as lein]))
 
 (def is-dev? (env :is-dev))
 
-(defn browser-repl []
+(defn weasel-repl []
   (piggieback/cljs-repl :repl-env (weasel/repl-env :ip "0.0.0.0" :port 9001)))
+
+(defn piggieback-repl []
+  (cemerick.piggieback/cljs-repl :repl-env (cljs.repl.browser/repl-env :port 9000)) )
 
 (defn start-figwheel []
   (future
     (print "Starting figwheel.\n")
-    (lein/-main ["figwheel"])))
+    (lein/-main "figwheel" :app :iso)))
 
 (defonce system nil)
 

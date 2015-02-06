@@ -7,10 +7,11 @@
   :source-paths ["src/clj" "src/cljs"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2760"]
+                 [org.clojure/clojurescript "0.0-SNAPSHOT"] ; local build of master
+                 ;; [org.clojure/clojurescript "0.0-2760"]
                  [figwheel "0.1.4-SNAPSHOT"]
-                 [com.cemerick/piggieback "0.1.5"]
-                 [weasel "0.5.0"]
+                 [com.cemerick/piggieback "0.1.6-SNAPSHOT"]
+                 ;; [weasel "0.5.0"] ; using local fork
                  [leiningen "2.5.0"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [log4j "1.2.17"]
@@ -27,14 +28,14 @@
                  [com.cognitect/transit-clj "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.202"]
                  [ring-transit "0.1.3"]
-                 [bidi "1.15.0" :exclusions [org.clojure/clojure]]
+                 [bidi "1.15.0" :exclusions [org.clojure/clojure com.cemerick/piggieback]]
                  [hiccup "1.0.5"]
                  [com.datomic/datomic-pro "0.9.5078"
                   :exclusions [org.slf4j/slf4j-nop org.slf4j/log4j-over-slf4j joda-time]]
                  [org.slf4j/slf4j-log4j12 "1.7.10"]
                  [com.stuartsierra/component "0.2.2"]
                  [clj-webdriver "0.6.1"]
-                 [cljs-http "0.1.25"]
+                 [cljs-http "0.1.25" :exclusions [com.cemerick/piggieback]]
                  [org.clojure/core.cache "0.6.4"]]
 
 
@@ -49,10 +50,14 @@
                              :compiler {:main "stack-spike.dev"
                                         :output-to "resources/public/js/main.js"
                                         :output-dir "resources/public/js/out"
-                                        :asset-path "js/out"
+                                        :asset-path "/js/out"
                                         :optimizations :none
                                         :pretty-print true
-                                        :source-map true}}}}
+                                        :source-map true}}
+                       :iso {:source-paths ["src"]
+                             :compiler {:main "stack-spike.om-app"
+                                        :output-to "resources/public/js/main-iso.js"
+                                        :optimizations :advanced}}}}
 
   :profiles {:dev {:repl-options {:init-ns user
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
@@ -66,7 +71,13 @@
                    :env {:is-dev true}
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]}}}}
-
+             :iso {
+                   :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
+                                              :compiler {:optimizations :advanced
+                                                         :output-to "resources/public/js/main-advanced.js"
+                                                         :source-map false
+                                                         :pretty-print false
+                                                         :output-dir "resources/public/js"}}}}}
              :uberjar {:hooks [leiningen.cljsbuild]
                        :env {:production true}
                        :omit-source true

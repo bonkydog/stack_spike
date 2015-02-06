@@ -1,6 +1,7 @@
 (ns stack-spike.interface.html.home
   (:require [hiccup.core :refer [html]]
-            [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]))
+            [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]
+            [stack-spike.interface.html.isomorphic :refer [render]]))
 
 
 (defn home []
@@ -25,7 +26,7 @@
       [:head
        [:meta {:id "csrf-token" :name "csrf-token" :content *anti-forgery-token*}]]
       [:body
-       [:div#root]
+       [:div#root (render state-edn)]
        [:script {:type "text/javascript" :src "/js/main.js"}]
        [:script#app-state {:type "application/edn"} state-edn]
        [:script {:type "text/javascript"} "stack_spike.om_app.init('root', 'app-state')"]]])))

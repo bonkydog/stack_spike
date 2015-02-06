@@ -13,7 +13,9 @@
             [goog.dom])
   (:import [goog Uri]))
 
-(enable-console-print!)
+(if (exists? js/console)
+  (enable-console-print!)
+  (set-print-fn! js/print))
 
 (def app-state
   (atom {:page (resolve (current-url))
@@ -162,6 +164,10 @@
 (defn de-namespace-keys [m]
   (apply hash-map (mapcat (fn [[k v]] [(-> k name keyword) v]) m)))
 
+
+(declare app-container
+         app-state)
+
 (defn main []
   (let [nav-chan (chan)
         update-chan (chan)
@@ -201,14 +207,12 @@
                                      (set-page (current-url))))
     (om/root page
              app-state
-             {:target (. js/document (getElementById "root"))
+             {:target app-container
               :shared {:nav-chan nav-chan
                        :update-chan update-chan
                        :create-chan create-chan
                        :delete-chan delete-chan}})))
 
-(declare app-container
-         app-state)
 
 (defn ^:export render-to-string
   "Takes an app state as EDN and returns the HTML for that state.
