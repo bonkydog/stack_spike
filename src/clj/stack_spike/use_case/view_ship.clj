@@ -6,14 +6,11 @@
 (defn view-ship [entity-gateway id]
   (eg/retrieve-entity entity-gateway id))
 
-(defn new-ship []
-  {:name ""})
-
 (defn create-ship [entity-gateway params]
-  (eg/store-entity entity-gateway (map->Spaceship (select-keys (keywordize-keys params) [:name]))))
+  (eg/store-entity entity-gateway (select-keys params [:ship/name])))
 
 (defn update-ship [entity-gateway params]
-  (eg/store-entity entity-gateway (map->Spaceship (select-keys (keywordize-keys params) [:id :name]))))
+  (eg/store-entity entity-gateway (select-keys params [:db/id :shipname])))
 
 (defn delete-ship [entity-gateway id]
   (eg/delete-entity entity-gateway id))

@@ -60,7 +60,7 @@
                         (:ship/name ship))
                 (dom/td {:class "controls"}
                         (dom/a {:class "delete" :href "#"
-                                :on-click #(activate % :delete (:db/id ship))}
+                                :on-click #(activate % :request-ship-delete ship)}
                                "[delete]")))))))
 
 (defn ship [ship owner]
@@ -71,7 +71,7 @@
 
     om/IRenderState
     (render-state [this state]
-      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :update (om/get-state owner))}
+      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :request-ship-update (om/get-state owner))}
                 (dom/label {:for "name"} "Name")
                 (dom/input {:id "name" :type "text" :name "name" :value (:ship/name state) :auto-focus true
                             :on-change #(om/set-state! owner :ship/name (-> % .-target .-value))})
@@ -86,7 +86,7 @@
 
     om/IRenderState
     (render-state [this state]
-      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :create (om/get-state owner))}
+      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :request-ship-create (om/get-state owner))}
                 (dom/label {:for "name"} "Name")
                 (dom/input {:id "name" :type "text" :name "name" :value (:ship/name state) :auto-focus true
                             :on-change #(om/set-state! owner :ship/name (-> % .-target .-value))})
@@ -103,7 +103,7 @@
                      (dom/th "name"))
                     (dom/tbody
                      (om/build-all ship-row ships)))
-               (dom/a {:class "new-ship" :href "/om/ships/new" :on-click navigate } "New Ship")))
+               (dom/a {:class "new-ship" :href "/ships/new" :on-click navigate } "New Ship")))
     ))
 
 (defn loading []
@@ -157,23 +157,25 @@
 (declare app-container
          app-state)
 
+(defn request-action [message]
+  (http/post "/api/action"
+             {:transit-params message
+              :headers {"Accept" "application/transit+json;verbose"
+                        "X-CSRF-Token" csrf-token}})  )
+
 (defn main []
   (set! (.-onpopstate js/window) (fn [e]
                                    (set-page (current-url))))
   (go-loop []
-    (let [[action arg] (<! action-chan)]
+    (let [action (<! action-chan)]
       (log action)
-      (case action
-        :delete (om/transact! (om/root-cursor app-state) :ships #(dissoc % arg))
-        :create (om/transact! (om/root-cursor app-state) :ships #(assoc % (:db/id arg) arg))
-        :update (om/transact! (om/root-cursor app-state) :ships #(assoc % (:db/id arg) arg))))
-    (prn @app-state)
-    (recur))
-  (om/root page
-           app-state
-           {:target (. js/document (getElementById "root"))
-            :tx-listen prn
-            :shared {:action-chan action-chan}}))
+      (request-action action)
+      (prn @app-state)
+      (recur)))
+  (om/root page app-state
+             {:target (. js/document (getElementById "root"))
+              :tx-listen prn
+              :shared {:action-chan action-chan}}))
 
 
 (defn ^:export render-to-string
