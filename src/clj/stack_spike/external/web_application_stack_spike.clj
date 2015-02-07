@@ -7,7 +7,7 @@
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [bidi.ring :as b]
-            [stack-spike.interface.routes :refer [routes]]
+            [stack-spike.shared.routes :refer [routes]]
             [stack-spike.interface.resources :refer [resources]]
             [stack-spike.external.url :refer [local-root-url]]
             [clojure.string :as str]
@@ -56,7 +56,7 @@
 
   (make-handler [this]
     (->  (b/make-handler
-          stack-spike.interface.routes/routes
+          stack-spike.shared.routes/routes
           #(get stack-spike.interface.resources/resources % %))
          (wrap-inject-database (:db this))
          wrap-anti-forgery

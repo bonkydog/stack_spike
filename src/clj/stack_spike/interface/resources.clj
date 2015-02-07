@@ -9,4 +9,5 @@
   {:home home/home
    :ships-api ship/ship-list
    :action ship/action
-   :om home/om})
+   :ship home/om
+   :ships home/om})

@@ -8,10 +8,15 @@
             [clojure.browser.repl]
             [figwheel.client :as figwheel :include-macros true]
             [stack-spike.tools :refer [log]]
-            [stack-spike.routes :refer [routes current-url resolve]]
+            [stack-spike.shared.routes :refer [routes resolve]]
             [cljs.reader :as edn]
             [goog.dom])
   (:import [goog Uri]))
+
+(defn current-url []
+  (if (exists? js/document)
+    (.-href (.-location js/document))
+    "/ships#nashorn"))
 
 (if (exists? js/console)
   (enable-console-print!)

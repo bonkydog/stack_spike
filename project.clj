@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "target/src/clj"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-SNAPSHOT"] ; local build of master
@@ -40,13 +40,14 @@
 
 
   :plugins [[lein-cljsbuild "1.0.4"]
+            [com.keminglabs/cljx "0.5.0"]
             [lein-environ "1.0.0"]]
 
   :min-lein-version "2.5.0"
 
   :uberjar-name "stack_spike.jar"
 
-  :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
+  :cljsbuild {:builds {:app {:source-paths ["src/cljs" "target/src/cljs"]
                              :compiler {:main "stack-spike.dev"
                                         :output-to "resources/public/js/main.js"
                                         :output-dir "resources/public/js/out"
@@ -54,11 +55,19 @@
                                         :optimizations :none
                                         :pretty-print true
                                         :source-map true}}
-                       :iso {:source-paths ["src/cljs"]
+                       :iso {:source-paths ["src/cljs" "target/src/cljs"]
                              :compiler {:main "stack-spike.om-app"
                                         :output-to "resources/public/js/main-iso.js"
                                         :optimizations :advanced}}}}
 
+  :cljx {:builds [{:source-paths ["src/cljx"]
+                         :output-path "target/src/clj"
+                         :rules :clj}
+
+                        {:source-paths ["src/cljx"]
+                         :output-path "target/src/cljs"
+                         :rules :cljs}]}
+  
   :profiles {:dev {:repl-options {:init-ns dev
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 

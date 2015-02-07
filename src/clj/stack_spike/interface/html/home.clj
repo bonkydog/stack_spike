@@ -1,7 +1,8 @@
 (ns stack-spike.interface.html.home
   (:require [hiccup.core :refer [html]]
             [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]
-            [stack-spike.interface.html.isomorphic :refer [render]]))
+            [stack-spike.interface.html.isomorphic :refer [render]]
+            [stack-spike.shared.routes :refer [resolve]]))
 
 
 (defn home []
@@ -17,9 +18,8 @@
 
 
 
-(defn om [ships]
-  (let [state-edn (prn-str {:page {:handler :ships
-                                   :params {}}
+(defn om [url ships]
+  (let [state-edn (prn-str {:page (resolve url)
                             :ships ships})]
     (html
      [:html
