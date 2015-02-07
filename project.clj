@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :source-paths ["src/clj" "target/src/clj"]
+  :source-paths ["src/clj" "vendor/clj" "target/src/clj"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-SNAPSHOT"] ; local build of master
@@ -47,7 +47,7 @@
 
   :uberjar-name "stack_spike.jar"
 
-  :cljsbuild {:builds {:app {:source-paths ["src/cljs" "target/src/cljs"]
+  :cljsbuild {:builds {:app {:source-paths ["src/cljs" "vendor/cljs" "target/src/cljs"]
                              :compiler {:main "stack-spike.dev"
                                         :output-to "resources/public/js/main.js"
                                         :output-dir "resources/public/js/out"
@@ -55,7 +55,7 @@
                                         :optimizations :none
                                         :pretty-print true
                                         :source-map true}}
-                       :iso {:source-paths ["src/cljs" "target/src/cljs"]
+                       :iso {:source-paths ["src/cljs" "vendor/cljs" "target/src/cljs"]
                              :compiler {:main "stack-spike.om-app"
                                         :output-to "resources/public/js/main-iso.js"
                                         :optimizations :advanced}}}}
