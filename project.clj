@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :source-paths ["src/clj" "src/cljs"]
+  :source-paths ["src/clj"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-SNAPSHOT"] ; local build of master
@@ -46,7 +46,7 @@
 
   :uberjar-name "stack_spike.jar"
 
-  :cljsbuild {:builds {:app {:source-paths ["src"]
+  :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
                              :compiler {:main "stack-spike.dev"
                                         :output-to "resources/public/js/main.js"
                                         :output-dir "resources/public/js/out"
@@ -54,12 +54,12 @@
                                         :optimizations :none
                                         :pretty-print true
                                         :source-map true}}
-                       :iso {:source-paths ["src"]
+                       :iso {:source-paths ["src/cljs"]
                              :compiler {:main "stack-spike.om-app"
                                         :output-to "resources/public/js/main-iso.js"
                                         :optimizations :advanced}}}}
 
-  :profiles {:dev {:repl-options {:init-ns user
+  :profiles {:dev {:repl-options {:init-ns dev
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
                    :plugins [[lein-figwheel "0.1.4-SNAPSHOT"]]
@@ -71,13 +71,7 @@
                    :env {:is-dev true}
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]}}}}
-             :iso {
-                   :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
-                                              :compiler {:optimizations :advanced
-                                                         :output-to "resources/public/js/main-advanced.js"
-                                                         :source-map false
-                                                         :pretty-print false
-                                                         :output-dir "resources/public/js"}}}}}
+
              :uberjar {:hooks [leiningen.cljsbuild]
                        :env {:production true}
                        :omit-source true
