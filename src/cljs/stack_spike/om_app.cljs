@@ -23,7 +23,7 @@
   (set-print-fn! js/print))
 
 (def app-state
-  (atom {:page (resolve (current-url))
+  (atom {:page nil
          :ships nil}))
 
 
