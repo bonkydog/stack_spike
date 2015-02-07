@@ -20,7 +20,7 @@
   (let [[action arg] (:body request)
         eg (entity-gateway (:db request))
         result (case action
-          :request-ship-create (create-ship eg arg)
-          :request-ship-update (update-ship eg arg)
-          :request-ship-delete (delete-ship eg (:db/id arg)))]
-    (transit-response {:result result})))
+          :request-create-ship (create-ship eg arg)
+          :request-update-ship (update-ship eg arg)
+          :request-delete-ship (delete-ship eg (:db/id arg)))]
+    (transit-response result)))

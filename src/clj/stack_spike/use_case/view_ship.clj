@@ -7,10 +7,10 @@
   (eg/retrieve-entity entity-gateway id))
 
 (defn create-ship [entity-gateway params]
-  (eg/store-entity entity-gateway (select-keys params [:ship/name])))
+  [:respond-create-ship (eg/store-entity entity-gateway (select-keys params [:ship/name]))])
 
 (defn update-ship [entity-gateway params]
-  (eg/store-entity entity-gateway (select-keys params [:db/id :shipname])))
+  [:respond-update-ship (eg/store-entity entity-gateway (select-keys params [:db/id :ship/name]))])
 
 (defn delete-ship [entity-gateway id]
-  (eg/delete-entity entity-gateway id))
+  (eg/delete-entity entity-gateway id) [:respond-delete-ship {:db/id id}])

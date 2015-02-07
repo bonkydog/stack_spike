@@ -18,15 +18,16 @@
     (.-href (.-location js/document))
     "/ships#nashorn"))
 
-(if (exists? js/console)
+(if (exists? js/window)
   (enable-console-print!)
   (set-print-fn! js/print))
 
-(def app-state
+(defonce app-state
   (atom {:page nil
          :ships nil}))
 
-(def action-chan (chan))
+(def request-chan (chan))
+(def response-chan (chan))
 
 (defn set-page [path]
   (om/update! (om/root-cursor app-state) :page (resolve-url path)))
@@ -42,7 +43,7 @@
 
 (defn activate [event action arg]
   (.preventDefault event)
-  (put! action-chan [action arg])
+  (put! request-chan [action arg])
   nil)
 
 (defn ship-row [id-ship-pair owner]
@@ -60,18 +61,18 @@
                         (:ship/name ship))
                 (dom/td {:class "controls"}
                         (dom/a {:class "delete" :href "#"
-                                :on-click #(activate % :request-ship-delete @ship)}
+                                :on-click #(activate % :request-delete-ship @ship)}
                                "[delete]")))))))
 
 (defn ship [ship owner]
   (reify
     om/IInitState
     (init-state [this]
-      ship)
+      @ship)
 
     om/IRenderState
     (render-state [this state]
-      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :request-ship-update (om/get-state owner))}
+      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :request-update-ship (om/get-state owner))}
                 (dom/label {:for "name"} "Name")
                 (dom/input {:id "name" :type "text" :name "name" :value (:ship/name state) :auto-focus true
                             :on-change #(om/set-state! owner :ship/name (-> % .-target .-value))})
@@ -86,7 +87,7 @@
 
     om/IRenderState
     (render-state [this state]
-      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :request-ship-create (om/get-state owner))}
+      (dom/form {:class "ship" :method "POST" :on-submit #(activate % :request-create-ship (om/get-state owner))}
                 (dom/label {:for "name"} "Name")
                 (dom/input {:id "name" :type "text" :name "name" :value (:ship/name state) :auto-focus true
                             :on-change #(om/set-state! owner :ship/name (-> % .-target .-value))})
@@ -157,25 +158,39 @@
 (declare app-container
          app-state)
 
-(defn request-action [message]
-  (http/post "/api/action"
-             {:transit-params message
-              :headers {"Accept" "application/transit+json;verbose"
-                        "X-CSRF-Token" csrf-token}})  )
+(defn send-request [message]
+  (go
+    (let [response (<! (http/post "/api/action"
+                               {:transit-params message
+                                :headers {"Accept" "application/transit+json;verbose"
+                                          "X-CSRF-Token" csrf-token}}))]
+      (log response)
+      (when (= 200 (:status response))
+        (put! response-chan (:body response))))))
 
 (defn main []
   (set! (.-onpopstate js/window) (fn [e]
                                    (set-page (current-url))))
   (go-loop []
-    (let [action (<! action-chan)]
-      (log action)
-      (request-action action)
-      (prn @app-state)
+    (let [request (<! request-chan)]
+      (log "request: " request)
+      (send-request request)
+      (recur)))
+  (go-loop []
+    (let [response (<! response-chan)]
+      (log "response:" response)
+      (let [[action argument] response]
+        (case action
+          :respond-delete-ship (om/transact! (om/root-cursor app-state) :ships #(dissoc % (:db/id argument)))
+          :respond-create-ship (do (om/update! (om/root-cursor app-state) [:ships (:db/id argument)] argument)
+                                   (goto "/ships"))
+          :respond-update-ship (do (om/update! (om/root-cursor app-state) [:ships (:db/id argument)] argument)
+                                   (goto "/ships"))
+          (log "invalid action:" action)))
       (recur)))
   (om/root page app-state
-             {:target (. js/document (getElementById "root"))
-              :tx-listen prn
-              :shared {:action-chan action-chan}}))
+           {:target (. js/document (getElementById "root"))
+            :shared {:request-chan request-chan}}))
 
 
 (defn ^:export render-to-string
@@ -192,6 +207,7 @@
   Should only be called once on page load.
   It can be invoked from JS as `omelette.view.init(appElementId, stateElementId)`."
   [app-id state-id]
+  (enable-console-print!)
   (->> state-id
        goog.dom/getElement
        .-textContent
