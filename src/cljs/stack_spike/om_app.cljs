@@ -60,7 +60,7 @@
                         (:ship/name ship))
                 (dom/td {:class "controls"}
                         (dom/a {:class "delete" :href "#"
-                                :on-click #(activate % :request-ship-delete ship)}
+                                :on-click #(activate % :request-ship-delete @ship)}
                                "[delete]")))))))
 
 (defn ship [ship owner]
