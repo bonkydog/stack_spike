@@ -12,7 +12,7 @@
               }
         :post {"api/action" :action}}])
 
-(defn resolve [url-or-path]
+(defn resolve-url [url-or-path]
   (let [path (:path (u/url url-or-path))]
     (b/match-route routes path :request-method :get)))
 

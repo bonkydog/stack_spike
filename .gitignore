@@ -12,4 +12,5 @@ resources/public/js/
 out/
 .repl/
 log/
-
+src/generated_clj/
+src/generated_cljs/

@@ -8,7 +8,7 @@
             [clojure.browser.repl]
             [figwheel.client :as figwheel :include-macros true]
             [stack-spike.tools :refer [log]]
-            [stack-spike.shared.routes :refer [routes resolve]]
+            [stack-spike.shared.routes :refer [routes resolve-url]]
             [cljs.reader :as edn]
             [goog.dom])
   (:import [goog Uri]))
@@ -29,7 +29,7 @@
 (def action-chan (chan))
 
 (defn set-page [path]
-  (om/update! (om/root-cursor app-state) :page (resolve path)))
+  (om/update! (om/root-cursor app-state) :page (resolve-url path)))
 
 (defn goto [url]
   (.pushState js/history {} nil url )

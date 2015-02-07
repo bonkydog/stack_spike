@@ -1,6 +1,7 @@
 (ns stack-spike.interface.html.isomorphic
   (:require [clojure.java.io :as io]
-            [hiccup.page :refer [html5 include-css include-js]])
+            [hiccup.page :refer [html5 include-css include-js]]
+            [clojure.tools.logging :as log])
   (:import [javax.script
             Invocable
             ScriptEngineManager]))
@@ -25,9 +26,7 @@
                 list
                 object-array))))
        (catch Exception e
-         (prn e)
-         (println (.getFileName e))
-         (println (.getLineNumber e)))))
+         (log/error (str "Render error: " e " file: " (.getFileName e) " line: " (.getLineNumber e))))))
 
 
 (defn render-fn

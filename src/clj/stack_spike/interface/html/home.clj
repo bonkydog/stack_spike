@@ -2,7 +2,7 @@
   (:require [hiccup.core :refer [html]]
             [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]
             [stack-spike.interface.html.isomorphic :refer [render-fn]]
-            [stack-spike.shared.routes :refer [resolve]]))
+            [stack-spike.shared.routes :refer [resolve-url]]))
 
 
 (defn home []
@@ -19,7 +19,7 @@
 
 
 (defn om [url ships]
-  (let [state-edn (prn-str {:page (resolve url)
+  (let [state-edn (prn-str {:page (resolve-url url)
                             :ships ships})]
     (html
      [:html

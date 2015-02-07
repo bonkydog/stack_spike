@@ -4,7 +4,10 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :source-paths ["src/clj" "vendor/clj" "target/src/clj"]
+  ;; cljs paths needed here for browser repl analysis.
+  ;; see https://github.com/tomjakubowski/weasel/issues/28
+  :source-paths ["src/clj" "vendor/clj" "src/generated_clj"
+                 "src/cljs" "vendor/cljs" "src/generated_cljs"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-SNAPSHOT"] ; local build of master
@@ -38,7 +41,6 @@
                  [cljs-http "0.1.25" :exclusions [com.cemerick/piggieback]]
                  [org.clojure/core.cache "0.6.4"]]
 
-
   :plugins [[lein-cljsbuild "1.0.4"]
             [com.keminglabs/cljx "0.5.0"]
             [lein-environ "1.0.0"]]
@@ -47,7 +49,7 @@
 
   :uberjar-name "stack_spike.jar"
 
-  :cljsbuild {:builds {:app {:source-paths ["src/cljs" "vendor/cljs" "target/src/cljs"]
+  :cljsbuild {:builds {:app {:source-paths ["src/cljs" "vendor/cljs" "src/generated_cljs"]
                              :compiler {:main "stack-spike.dev"
                                         :output-to "resources/public/js/main.js"
                                         :output-dir "resources/public/js/out"
@@ -55,21 +57,22 @@
                                         :optimizations :none
                                         :pretty-print true
                                         :source-map true}}
-                       :iso {:source-paths ["src/cljs" "vendor/cljs" "target/src/cljs"]
+                       :iso {:source-paths ["src/cljs" "vendor/cljs" "src/generated_cljs"]
                              :compiler {:main "stack-spike.om-app"
                                         :output-to "resources/public/js/main-iso.js"
                                         :optimizations :advanced}}}}
 
   :cljx {:builds [{:source-paths ["src/cljx"]
-                         :output-path "target/src/clj"
+                         :output-path "src/generated_clj"
                          :rules :clj}
 
                         {:source-paths ["src/cljx"]
-                         :output-path "target/src/cljs"
+                         :output-path "src/generated_cljs"
                          :rules :cljs}]}
-  
+  :clean-targets ^{:protect false} [:target-path "src/generated_clj" "src/generated_cljs"]
   :profiles {:dev {:repl-options {:init-ns dev
-                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+                                  ;; :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
+                                  }
 
                    :plugins [[lein-figwheel "0.1.4-SNAPSHOT"]]
 
