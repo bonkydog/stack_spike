@@ -28,7 +28,7 @@
 (defn start-figwheel []
   (future
     (print "Starting figwheel.\n")
-    (lein/-main "figwheel" :app :iso)))
+    (lein/-main "figwheel" "app")))
 
 (defonce system nil)
 
