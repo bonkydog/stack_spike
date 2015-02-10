@@ -16,10 +16,14 @@
   (let [path (:path (u/url url-or-path))]
     (b/match-route routes path :request-method :get)))
 
-(defn path-for [route & params]
-  (apply b/path-for routes route params))
+(defn path-for
+  ([route] (path-for route {}))
+  ([route params]
+   (b/unmatch-pair routes {:handler route :params (merge {:request-method :get} params)})))
 
-(defn url-for [root-url route & params]
-  (-> (u/url root-url)
-    (assoc :path (apply path-for route params))
-    str))
+(defn url-for
+  ([root-url route] (url-for route {}))
+  ([root-url route params]
+   (-> (u/url root-url)
+       (assoc :path (apply path-for route params))
+       str)))

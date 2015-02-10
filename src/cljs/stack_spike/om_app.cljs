@@ -8,7 +8,7 @@
             [clojure.browser.repl]
             [figwheel.client :as figwheel :include-macros true]
             [stack-spike.tools :refer [log]]
-            [stack-spike.shared.routes :refer [routes resolve-url]]
+            [stack-spike.shared.routes :refer [routes resolve-url path-for]]
             [cljs.reader :as edn]
             [goog.dom])
   (:import [goog Uri]))
@@ -53,7 +53,7 @@
       (let [ship (last id-ship-pair)]
         (dom/tr {:id (str "ship-" (:db/id ship)) :class "ship"}
                 (dom/td {:class "id"}
-                        (dom/a {:href (str "/ships/" (:db/id ship))
+                        (dom/a {:href (path-for :ship {:id (:db/id ship)})
                                 :class "edit"
                                 :on-click navigate}
                                (:db/id ship)))
@@ -104,8 +104,7 @@
                      (dom/th "name"))
                     (dom/tbody
                      (om/build-all ship-row ships)))
-               (dom/a {:class "new-ship" :href "/ships/new" :on-click navigate } "New Ship")))
-    ))
+               (dom/a {:class "new-ship" :href (path-for :ship {:id "new"}) :on-click navigate } "New Ship")))))
 
 (defn loading []
   (om/component
@@ -133,7 +132,7 @@
 
 (defn fetch-ships [app]
 
-  (go (let [response (<! (http/get "/ships" {:headers {"Accept" "application/transit+json;verbose"}}))]
+  (go (let [response (<! (http/get (path-for :ships-api) {:headers {"Accept" "application/transit+json;verbose"}}))]
         (om/update! app :ships (:body response)))))
 
 (defn page [app owner]
@@ -160,7 +159,7 @@
 
 (defn send-request [message]
   (go
-    (let [response (<! (http/post "/api/action"
+    (let [response (<! (http/post (path-for :action {:request-method :post})
                                {:transit-params message
                                 :headers {"Accept" "application/transit+json;verbose"
                                           "X-CSRF-Token" csrf-token}}))]
