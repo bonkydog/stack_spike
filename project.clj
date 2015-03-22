@@ -1,6 +1,6 @@
 (defproject stack_spike "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "An architectural spike for Clojure web applications"
+  :url "https://github.com/bonkydog/stack_spike"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
